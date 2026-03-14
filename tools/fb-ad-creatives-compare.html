@@ -1,0 +1,1000 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Neural Summary - Ad Creatives: Dark vs Light</title>
+  <link href="https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&family=DM+Mono:wght@400;500&family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: #2a2640;
+      font-family: 'Montserrat', sans-serif;
+      padding: 40px 20px;
+      color: white;
+    }
+
+    /* === PAGE LAYOUT === */
+    .page-header {
+      text-align: center;
+      margin-bottom: 48px;
+    }
+
+    .page-header h1 {
+      font-size: 28px;
+      font-weight: 700;
+      color: white;
+      margin-bottom: 8px;
+    }
+
+    .page-header p {
+      font-family: 'DM Mono', monospace;
+      font-size: 14px;
+      color: rgba(255,255,255,0.4);
+    }
+
+    /* Each creative pair row */
+    .pair-section {
+      max-width: 1200px;
+      margin: 0 auto 64px;
+    }
+
+    .pair-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      padding: 0 4px;
+    }
+
+    .pair-header .info h3 {
+      font-size: 18px;
+      font-weight: 700;
+      color: white;
+      margin-bottom: 4px;
+    }
+
+    .pair-header .info span {
+      font-family: 'DM Mono', monospace;
+      font-size: 12px;
+      color: rgba(255,255,255,0.35);
+    }
+
+    .pair-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+
+    .variant-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .variant-label {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+    }
+
+    .variant-label .tag {
+      font-family: 'DM Mono', monospace;
+      font-size: 12px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      padding: 5px 14px;
+      border-radius: 6px;
+    }
+
+    .variant-label .tag.dark {
+      background: rgba(255,255,255,0.08);
+      color: rgba(255,255,255,0.5);
+    }
+
+    .variant-label .tag.light {
+      background: rgba(141,106,250,0.15);
+      color: #8D6AFA;
+    }
+
+    .variant-label .actions {
+      display: flex;
+      gap: 6px;
+    }
+
+    .btn-export {
+      background: #8D6AFA;
+      color: white;
+      border: none;
+      padding: 6px 16px;
+      border-radius: 8px;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-export:hover {
+      background: #7A5AE0;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(141,106,250,0.35);
+    }
+
+    .btn-export.secondary {
+      background: #3F38A0;
+    }
+
+    .btn-export.secondary:hover {
+      background: #4a42b8;
+    }
+
+    .btn-export.large {
+      padding: 14px 40px;
+      font-size: 15px;
+    }
+
+    /* Scale to ~50% to fit side by side */
+    .scale-wrapper {
+      transform: scale(0.5);
+      transform-origin: top center;
+      margin-bottom: -540px;
+    }
+
+    /* === AD CANVAS (1080x1080) === */
+    .ad {
+      width: 1080px;
+      height: 1080px;
+      position: relative;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    /* ========================================
+       SHARED ELEMENTS
+       ======================================== */
+
+    /* Logo */
+    .ad-logo {
+      width: 200px;
+      height: auto;
+      margin-bottom: 40px;
+    }
+
+    /* Bottom accent line */
+    .ad-accent-line {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(to right, #14D0DC, #8D6AFA, #14D0DC);
+      z-index: 10;
+    }
+
+    /* ========================================
+       DARK VARIANTS
+       ======================================== */
+
+    /* --- DARK: Creative 1 --- */
+    .dark .ad-1 { background: #1a1035; }
+    .dark .ad-1::before {
+      content: '';
+      position: absolute;
+      inset: -100px;
+      background:
+        radial-gradient(ellipse 70% 50% at 20% 25%, rgba(141,106,250,0.18) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 40% at 80% 75%, rgba(20,208,220,0.12) 0%, transparent 55%),
+        radial-gradient(ellipse 60% 45% at 60% 10%, rgba(141,106,250,0.10) 0%, transparent 50%);
+      z-index: 0;
+    }
+    .dark .ad-1 .ad-content {
+      position: relative; z-index: 3; height: 100%;
+      display: flex; flex-direction: column; padding: 64px 72px 0;
+    }
+    .dark .ad-logo { opacity: 0.85; }
+    .dark .ad-eyebrow {
+      font-family: 'DM Mono', monospace; font-size: 18px; text-transform: uppercase;
+      letter-spacing: 3px; color: #14D0DC; display: flex; align-items: center; gap: 10px; margin-bottom: 28px;
+    }
+    .dark .ad-eyebrow .dot {
+      width: 8px; height: 8px; border-radius: 50%; background: #14D0DC;
+      box-shadow: 0 0 12px rgba(20,208,220,0.6);
+    }
+    .dark .ad-1 .ad-headline {
+      font-weight: 800; font-size: 64px; line-height: 1.1; color: white;
+      margin-bottom: 32px; max-width: 700px;
+    }
+    .dark .ad-1 .ad-headline em { color: #14D0DC; font-style: normal; }
+    .dark .ad-1 .ad-subtext {
+      font-size: 28px; font-weight: 400; color: rgba(255,255,255,0.50);
+      line-height: 1.5; max-width: 580px; margin-bottom: 40px;
+    }
+    .dark .ad-1 .ad-subtext strong { color: rgba(255,255,255,0.85); font-weight: 600; }
+    .dark .deliverable-pill {
+      display: flex; align-items: center; gap: 10px;
+      background: rgba(141,106,250,0.15); border: 1px solid rgba(141,106,250,0.35);
+      border-radius: 12px; padding: 14px 22px; font-size: 18px; font-weight: 500;
+      color: rgba(255,255,255,0.85);
+    }
+    .dark .ad-1 .lionel {
+      position: absolute; bottom: -20px; right: -20px; width: 520px; z-index: 2;
+      opacity: 0.95; filter: drop-shadow(0 0 60px rgba(141,106,250,0.25));
+    }
+    .dark .ad-url {
+      position: absolute; bottom: 28px; left: 72px;
+      font-family: 'DM Mono', monospace; font-size: 16px;
+      color: rgba(255,255,255,0.25); letter-spacing: 0.5px; z-index: 10;
+    }
+
+    /* --- DARK: Creative 2 --- */
+    .dark .ad-2 { background: #120e2a; }
+    .dark .ad-2::before {
+      content: '';
+      position: absolute; inset: -100px;
+      background:
+        radial-gradient(ellipse 60% 50% at 50% 30%, rgba(220,50,50,0.08) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 40% at 20% 70%, rgba(141,106,250,0.12) 0%, transparent 55%),
+        radial-gradient(ellipse 55% 45% at 80% 20%, rgba(20,208,220,0.08) 0%, transparent 50%);
+      z-index: 0;
+    }
+    .dark .ad-2 .ad-content {
+      position: relative; z-index: 3; height: 100%;
+      display: flex; flex-direction: column; padding: 64px 72px;
+    }
+    .dark .ad-2 .ad-headline {
+      font-weight: 800; font-size: 58px; line-height: 1.12; color: white;
+      margin-bottom: 28px; max-width: 680px;
+    }
+    .dark .ad-2 .ad-headline em { color: #ff6b6b; font-style: normal; }
+    .dark .ad-2 .ad-subtext {
+      font-size: 26px; font-weight: 400; color: rgba(255,255,255,0.45);
+      line-height: 1.5; max-width: 500px; margin-bottom: 36px;
+    }
+    .dark .ad-2 .ad-subtext strong { color: rgba(255,255,255,0.80); font-weight: 600; }
+    .dark .timeline-row.them {
+      background: rgba(141,106,250,0.12); border: 1px solid rgba(141,106,250,0.25);
+    }
+    .dark .timeline-row.you {
+      background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
+    }
+    .dark .timeline-row.them .timeline-label { color: #8D6AFA; }
+    .dark .timeline-row.you .timeline-label { color: rgba(255,255,255,0.35); }
+    .dark .timeline-row.them .timeline-bar { background: linear-gradient(to right, #8D6AFA, #14D0DC); }
+    .dark .timeline-row.you .timeline-bar { background: rgba(255,255,255,0.1); }
+    .dark .timeline-row.them .timeline-text { color: rgba(255,255,255,0.85); }
+    .dark .timeline-row.you .timeline-text { color: rgba(255,255,255,0.30); }
+    .dark .ad-2 .lionel {
+      position: absolute; bottom: -30px; right: -10px; width: 480px; z-index: 2;
+      opacity: 0.90; filter: drop-shadow(0 0 60px rgba(141,106,250,0.25));
+    }
+
+    /* --- DARK: Creative 3 --- */
+    .dark .ad-3 { background: #141030; }
+    .dark .ad-3::before {
+      content: '';
+      position: absolute; inset: -100px;
+      background:
+        radial-gradient(ellipse 65% 50% at 25% 30%, rgba(20,208,220,0.14) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 40% at 75% 70%, rgba(141,106,250,0.16) 0%, transparent 55%),
+        radial-gradient(ellipse 55% 40% at 50% 10%, rgba(20,208,220,0.08) 0%, transparent 50%);
+      z-index: 0;
+    }
+    .dark .ad-3 .ad-content {
+      position: relative; z-index: 3; height: 100%;
+      display: flex; flex-direction: column; padding: 64px 72px 0;
+    }
+    .dark .ad-3 .ad-headline {
+      font-weight: 800; font-size: 62px; line-height: 1.1; color: white;
+      margin-bottom: 28px; max-width: 700px;
+    }
+    .dark .ad-3 .ad-headline em { color: #14D0DC; font-style: normal; }
+    .dark .ad-3 .ad-subtext {
+      font-size: 26px; font-weight: 400; color: rgba(255,255,255,0.50);
+      line-height: 1.5; max-width: 560px; margin-bottom: 40px;
+    }
+    .dark .ad-3 .ad-subtext strong { color: rgba(255,255,255,0.85); font-weight: 600; }
+    .dark .output-card {
+      background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.10);
+      border-radius: 14px; padding: 20px 22px; display: flex; align-items: center; gap: 14px;
+    }
+    .dark .output-card-icon.prd { background: rgba(20,208,220,0.15); color: #14D0DC; }
+    .dark .output-card-icon.brief { background: rgba(141,106,250,0.15); color: #8D6AFA; }
+    .dark .output-card-icon.insights { background: rgba(72,199,142,0.15); color: #48c78e; }
+    .dark .output-card-icon.sprint { background: rgba(232,108,255,0.15); color: #e86cff; }
+    .dark .output-card-text { color: rgba(255,255,255,0.80); }
+    .dark .ad-3 .lionel {
+      position: absolute; bottom: -20px; right: -20px; width: 500px; z-index: 2;
+      opacity: 0.95; filter: drop-shadow(0 0 60px rgba(141,106,250,0.25));
+    }
+
+    /* --- DARK: Creative 4 --- */
+    .dark .ad-4 { background: #110d28; }
+    .dark .ad-4::before {
+      content: '';
+      position: absolute; inset: -100px;
+      background:
+        radial-gradient(ellipse 70% 60% at 30% 40%, rgba(141,106,250,0.14) 0%, transparent 55%),
+        radial-gradient(ellipse 50% 50% at 70% 70%, rgba(20,208,220,0.10) 0%, transparent 50%);
+      z-index: 0;
+    }
+    .dark .ad-4 .ad-content {
+      position: relative; z-index: 3; height: 100%;
+      display: flex; flex-direction: column; padding: 64px 72px 0;
+    }
+    .dark .ad-4 .stat-number {
+      font-weight: 800; font-size: 180px; line-height: 1;
+      background: linear-gradient(135deg, #8D6AFA, #14D0DC);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .dark .ad-4 .stat-label {
+      font-weight: 700; font-size: 48px; color: white; line-height: 1.2; margin-bottom: 32px;
+    }
+    .dark .ad-4 .ad-subtext {
+      font-size: 26px; font-weight: 400; color: rgba(255,255,255,0.45);
+      line-height: 1.5; max-width: 540px; margin-bottom: 40px;
+    }
+    .dark .ad-4 .ad-subtext strong { color: rgba(255,255,255,0.80); font-weight: 600; }
+    .dark .testimonial-card {
+      background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.10);
+      border-radius: 16px; padding: 28px 32px; max-width: 540px;
+    }
+    .dark .testimonial-quote {
+      font-family: 'Merriweather', serif; font-size: 20px; font-style: italic;
+      color: rgba(255,255,255,0.65); line-height: 1.6; margin-bottom: 16px;
+    }
+    .dark .testimonial-name { color: rgba(255,255,255,0.75); }
+    .dark .testimonial-role { color: rgba(255,255,255,0.35); }
+    .dark .ad-4 .lionel {
+      position: absolute; bottom: -20px; right: -30px; width: 460px; z-index: 2;
+      opacity: 0.90; filter: drop-shadow(0 0 60px rgba(141,106,250,0.25));
+    }
+
+    /* ========================================
+       LIGHT VARIANTS
+       ======================================== */
+
+    /* --- LIGHT: Creative 1 --- */
+    .light .ad-1 { background: #f8f7fc; }
+    .light .ad-1::before {
+      content: '';
+      position: absolute; inset: -100px;
+      background:
+        radial-gradient(ellipse 70% 50% at 20% 25%, rgba(141,106,250,0.10) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 40% at 80% 75%, rgba(20,208,220,0.08) 0%, transparent 55%),
+        radial-gradient(ellipse 60% 45% at 60% 10%, rgba(141,106,250,0.06) 0%, transparent 50%);
+      z-index: 0;
+    }
+    .light .ad-1 .ad-content {
+      position: relative; z-index: 3; height: 100%;
+      display: flex; flex-direction: column; padding: 64px 72px 0;
+    }
+    .light .ad-eyebrow {
+      font-family: 'DM Mono', monospace; font-size: 18px; text-transform: uppercase;
+      letter-spacing: 3px; color: #8D6AFA; display: flex; align-items: center; gap: 10px; margin-bottom: 28px;
+    }
+    .light .ad-eyebrow .dot {
+      width: 8px; height: 8px; border-radius: 50%; background: #8D6AFA;
+      box-shadow: 0 0 12px rgba(141,106,250,0.4);
+    }
+    .light .ad-1 .ad-headline {
+      font-weight: 800; font-size: 64px; line-height: 1.1; color: #1a1035;
+      margin-bottom: 32px; max-width: 700px;
+    }
+    .light .ad-1 .ad-headline em { color: #8D6AFA; font-style: normal; }
+    .light .ad-1 .ad-subtext {
+      font-size: 28px; font-weight: 400; color: rgba(26,16,53,0.45);
+      line-height: 1.5; max-width: 580px; margin-bottom: 40px;
+    }
+    .light .ad-1 .ad-subtext strong { color: rgba(26,16,53,0.80); font-weight: 600; }
+    .light .deliverable-pill {
+      display: flex; align-items: center; gap: 10px;
+      background: rgba(141,106,250,0.08); border: 1px solid rgba(141,106,250,0.22);
+      border-radius: 12px; padding: 14px 22px; font-size: 18px; font-weight: 500;
+      color: #3e2d77;
+    }
+    .light .ad-1 .lionel {
+      position: absolute; bottom: -20px; right: -20px; width: 520px; z-index: 2;
+      opacity: 0.95; filter: drop-shadow(0 0 60px rgba(141,106,250,0.18));
+    }
+    .light .ad-url {
+      position: absolute; bottom: 28px; left: 72px;
+      font-family: 'DM Mono', monospace; font-size: 16px;
+      color: rgba(26,16,53,0.20); letter-spacing: 0.5px; z-index: 10;
+    }
+
+    /* --- LIGHT: Creative 2 --- */
+    .light .ad-2 { background: #f6f5fb; }
+    .light .ad-2::before {
+      content: '';
+      position: absolute; inset: -100px;
+      background:
+        radial-gradient(ellipse 60% 50% at 50% 30%, rgba(220,50,50,0.05) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 40% at 20% 70%, rgba(141,106,250,0.08) 0%, transparent 55%),
+        radial-gradient(ellipse 55% 45% at 80% 20%, rgba(20,208,220,0.06) 0%, transparent 50%);
+      z-index: 0;
+    }
+    .light .ad-2 .ad-content {
+      position: relative; z-index: 3; height: 100%;
+      display: flex; flex-direction: column; padding: 64px 72px;
+    }
+    .light .ad-2 .ad-headline {
+      font-weight: 800; font-size: 58px; line-height: 1.12; color: #1a1035;
+      margin-bottom: 28px; max-width: 680px;
+    }
+    .light .ad-2 .ad-headline em { color: #dc3232; font-style: normal; }
+    .light .ad-2 .ad-subtext {
+      font-size: 26px; font-weight: 400; color: rgba(26,16,53,0.42);
+      line-height: 1.5; max-width: 500px; margin-bottom: 36px;
+    }
+    .light .ad-2 .ad-subtext strong { color: rgba(26,16,53,0.78); font-weight: 600; }
+    .light .timeline-row.them {
+      background: rgba(141,106,250,0.08); border: 1px solid rgba(141,106,250,0.18);
+    }
+    .light .timeline-row.you {
+      background: rgba(26,16,53,0.03); border: 1px solid rgba(26,16,53,0.08);
+    }
+    .light .timeline-row.them .timeline-label { color: #8D6AFA; }
+    .light .timeline-row.you .timeline-label { color: rgba(26,16,53,0.30); }
+    .light .timeline-row.them .timeline-bar { background: linear-gradient(to right, #8D6AFA, #14D0DC); }
+    .light .timeline-row.you .timeline-bar { background: rgba(26,16,53,0.08); }
+    .light .timeline-row.them .timeline-text { color: #3e2d77; }
+    .light .timeline-row.you .timeline-text { color: rgba(26,16,53,0.28); }
+    .light .ad-2 .lionel {
+      position: absolute; bottom: -30px; right: -10px; width: 480px; z-index: 2;
+      opacity: 0.90; filter: drop-shadow(0 0 60px rgba(141,106,250,0.18));
+    }
+
+    /* --- LIGHT: Creative 3 --- */
+    .light .ad-3 { background: #f7f6fc; }
+    .light .ad-3::before {
+      content: '';
+      position: absolute; inset: -100px;
+      background:
+        radial-gradient(ellipse 65% 50% at 25% 30%, rgba(20,208,220,0.08) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 40% at 75% 70%, rgba(141,106,250,0.10) 0%, transparent 55%),
+        radial-gradient(ellipse 55% 40% at 50% 10%, rgba(20,208,220,0.05) 0%, transparent 50%);
+      z-index: 0;
+    }
+    .light .ad-3 .ad-content {
+      position: relative; z-index: 3; height: 100%;
+      display: flex; flex-direction: column; padding: 64px 72px 0;
+    }
+    .light .ad-3 .ad-headline {
+      font-weight: 800; font-size: 62px; line-height: 1.1; color: #1a1035;
+      margin-bottom: 28px; max-width: 700px;
+    }
+    .light .ad-3 .ad-headline em { color: #8D6AFA; font-style: normal; }
+    .light .ad-3 .ad-subtext {
+      font-size: 26px; font-weight: 400; color: rgba(26,16,53,0.45);
+      line-height: 1.5; max-width: 560px; margin-bottom: 40px;
+    }
+    .light .ad-3 .ad-subtext strong { color: rgba(26,16,53,0.80); font-weight: 600; }
+    .light .output-card {
+      background: white; border: 1px solid rgba(26,16,53,0.08);
+      border-radius: 14px; padding: 20px 22px; display: flex; align-items: center; gap: 14px;
+      box-shadow: 0 2px 8px rgba(26,16,53,0.04);
+    }
+    .light .output-card-icon.prd { background: rgba(20,208,220,0.12); color: #0ba8b4; }
+    .light .output-card-icon.brief { background: rgba(141,106,250,0.12); color: #7356ce; }
+    .light .output-card-icon.insights { background: rgba(72,199,142,0.12); color: #2e9e6a; }
+    .light .output-card-icon.sprint { background: rgba(232,108,255,0.12); color: #c44ee0; }
+    .light .output-card-text { color: #3e2d77; }
+    .light .ad-3 .lionel {
+      position: absolute; bottom: -20px; right: -20px; width: 500px; z-index: 2;
+      opacity: 0.95; filter: drop-shadow(0 0 60px rgba(141,106,250,0.18));
+    }
+
+    /* --- LIGHT: Creative 4 --- */
+    .light .ad-4 { background: #f5f4fa; }
+    .light .ad-4::before {
+      content: '';
+      position: absolute; inset: -100px;
+      background:
+        radial-gradient(ellipse 70% 60% at 30% 40%, rgba(141,106,250,0.10) 0%, transparent 55%),
+        radial-gradient(ellipse 50% 50% at 70% 70%, rgba(20,208,220,0.07) 0%, transparent 50%);
+      z-index: 0;
+    }
+    .light .ad-4 .ad-content {
+      position: relative; z-index: 3; height: 100%;
+      display: flex; flex-direction: column; padding: 64px 72px 0;
+    }
+    .light .ad-4 .stat-number {
+      font-weight: 800; font-size: 180px; line-height: 1;
+      background: linear-gradient(135deg, #8D6AFA, #14D0DC);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .light .ad-4 .stat-label {
+      font-weight: 700; font-size: 48px; color: #1a1035; line-height: 1.2; margin-bottom: 32px;
+    }
+    .light .ad-4 .ad-subtext {
+      font-size: 26px; font-weight: 400; color: rgba(26,16,53,0.42);
+      line-height: 1.5; max-width: 540px; margin-bottom: 40px;
+    }
+    .light .ad-4 .ad-subtext strong { color: rgba(26,16,53,0.78); font-weight: 600; }
+    .light .testimonial-card {
+      background: white; border: 1px solid rgba(26,16,53,0.08);
+      border-radius: 16px; padding: 28px 32px; max-width: 540px;
+      box-shadow: 0 2px 12px rgba(26,16,53,0.05);
+    }
+    .light .testimonial-quote {
+      font-family: 'Merriweather', serif; font-size: 20px; font-style: italic;
+      color: rgba(26,16,53,0.55); line-height: 1.6; margin-bottom: 16px;
+    }
+    .light .testimonial-name { color: #3e2d77; }
+    .light .testimonial-role { color: rgba(26,16,53,0.35); }
+    .light .ad-4 .lionel {
+      position: absolute; bottom: -20px; right: -30px; width: 460px; z-index: 2;
+      opacity: 0.90; filter: drop-shadow(0 0 60px rgba(141,106,250,0.18));
+    }
+
+    /* ========================================
+       SHARED STRUCTURAL STYLES
+       ======================================== */
+    .deliverable-row {
+      display: flex; gap: 14px; flex-wrap: wrap; max-width: 480px;
+    }
+    .deliverable-pill .check {
+      width: 22px; height: 22px; border-radius: 50%; background: #8D6AFA;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .deliverable-pill .check svg { width: 12px; height: 12px; }
+
+    .timeline-compare {
+      display: flex; flex-direction: column; gap: 16px; max-width: 560px;
+    }
+    .timeline-row {
+      display: flex; align-items: center; gap: 18px; padding: 18px 24px; border-radius: 14px;
+    }
+    .timeline-label {
+      font-family: 'DM Mono', monospace; font-size: 15px; font-weight: 500;
+      width: 60px; flex-shrink: 0;
+    }
+    .timeline-bar { height: 8px; border-radius: 4px; flex: 1; }
+    .timeline-text {
+      font-family: 'Montserrat', sans-serif; font-size: 17px; font-weight: 500; white-space: nowrap;
+    }
+
+    .output-cards {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 14px; max-width: 560px;
+    }
+    .output-card-icon {
+      width: 36px; height: 36px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 18px;
+    }
+    .output-card-text {
+      font-family: 'Montserrat', sans-serif; font-size: 17px; font-weight: 500;
+    }
+
+    .stat-block { margin-bottom: 12px; }
+    .stat-number { font-family: 'Montserrat', sans-serif; }
+    .stat-label { font-family: 'Montserrat', sans-serif; }
+
+    .testimonial-author { display: flex; align-items: center; gap: 12px; }
+    .testimonial-avatar {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: linear-gradient(135deg, #8D6AFA, #14D0DC);
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 14px; color: white;
+    }
+    .testimonial-name { font-family: 'Montserrat', sans-serif; font-size: 15px; font-weight: 600; }
+    .testimonial-role { font-family: 'DM Mono', monospace; font-size: 12px; }
+
+    /* Divider between pairs */
+    .pair-divider {
+      max-width: 1200px;
+      margin: 0 auto 64px;
+      border: none;
+      border-top: 1px solid rgba(255,255,255,0.06);
+    }
+
+    /* ========================================
+       RESPONSIVE
+       ======================================== */
+    @media (max-width: 1300px) {
+      .pair-row {
+        grid-template-columns: 1fr;
+        max-width: 600px;
+        margin: 0 auto;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Server Note -->
+  <div id="server-note" style="max-width: 600px; margin: 0 auto 32px; padding: 16px 24px; background: rgba(255,107,107,0.1); border: 1px solid rgba(255,107,107,0.25); border-radius: 10px; font-family: 'DM Mono', monospace; font-size: 12px; color: rgba(255,255,255,0.6); text-align: center; display: none;">
+    Images not loading? Serve from project root: <strong style="color: #ff8a8a;">npx serve . -p 3333</strong> then open <strong style="color: #14D0DC;">http://localhost:3333/tools/fb-ad-creatives-compare.html</strong>
+  </div>
+  <script>
+    window.addEventListener('load', () => {
+      const img = document.querySelector('.lionel');
+      if (img && !img.naturalWidth) document.getElementById('server-note').style.display = 'block';
+    });
+  </script>
+
+  <!-- Page Header -->
+  <div class="page-header">
+    <h1>Ad Creatives: Dark vs Light</h1>
+    <p>1080 x 1080 &mdash; Side-by-side comparison</p>
+  </div>
+
+  <!-- ==========================================
+       CREATIVE 1: Consultant - "The Gap"
+       ========================================== -->
+  <div class="pair-section">
+    <div class="pair-header">
+      <div class="info">
+        <h3>Creative 1: The Gap</h3>
+        <span>Persona: Consultants &middot; Angle: Aspirational provocation</span>
+      </div>
+    </div>
+    <div class="pair-row">
+      <!-- DARK -->
+      <div class="variant-wrapper dark">
+        <div class="variant-label">
+          <span class="tag dark">Dark</span>
+          <div class="actions">
+            <button class="btn-export" onclick="exportPNG('ad-1-dark', 'fb-ad-consultant-gap')">PNG</button>
+            <button class="btn-export secondary" onclick="exportPNG('ad-1-dark', 'fb-ad-consultant-gap', 2)">@2x</button>
+          </div>
+        </div>
+        <div class="scale-wrapper">
+          <div class="ad ad-1" id="ad-1-dark">
+            <div class="ad-content">
+              <img class="ad-logo" src="../apps/video/public/logos/neural-summary-logo-white.svg" alt="Neural Summary" />
+              <div class="ad-eyebrow"><div class="dot"></div>For consultants</div>
+              <h1 class="ad-headline">Top consultants don't write <em>meeting notes.</em></h1>
+              <p class="ad-subtext">They walk out with <strong>3 deliverables</strong>. Already done.</p>
+              <div class="deliverable-row">
+                <div class="deliverable-pill"><div class="check"><svg viewBox="0 0 12 12" fill="none"><path d="M2.5 6L5 8.5L9.5 3.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>Follow-up email</div>
+                <div class="deliverable-pill"><div class="check"><svg viewBox="0 0 12 12" fill="none"><path d="M2.5 6L5 8.5L9.5 3.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>Proposal brief</div>
+                <div class="deliverable-pill"><div class="check"><svg viewBox="0 0 12 12" fill="none"><path d="M2.5 6L5 8.5L9.5 3.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>Engagement summary</div>
+              </div>
+            </div>
+            <img class="lionel" src="../apps/web/public/assets/images/lionel-hero.webp" alt="" />
+            <div class="ad-url">neuralsummary.com</div>
+            <div class="ad-accent-line"></div>
+          </div>
+        </div>
+      </div>
+      <!-- LIGHT -->
+      <div class="variant-wrapper light">
+        <div class="variant-label">
+          <span class="tag light">Light</span>
+          <div class="actions">
+            <button class="btn-export" onclick="exportPNG('ad-1-light', 'fb-ad-consultant-gap-light')">PNG</button>
+            <button class="btn-export secondary" onclick="exportPNG('ad-1-light', 'fb-ad-consultant-gap-light', 2)">@2x</button>
+          </div>
+        </div>
+        <div class="scale-wrapper">
+          <div class="ad ad-1" id="ad-1-light">
+            <div class="ad-content">
+              <img class="ad-logo" src="../apps/web/public/assets/logos/neural-summary-logo.svg" alt="Neural Summary" />
+              <div class="ad-eyebrow"><div class="dot"></div>For consultants</div>
+              <h1 class="ad-headline">Top consultants don't write <em>meeting notes.</em></h1>
+              <p class="ad-subtext">They walk out with <strong>3 deliverables</strong>. Already done.</p>
+              <div class="deliverable-row">
+                <div class="deliverable-pill"><div class="check"><svg viewBox="0 0 12 12" fill="none"><path d="M2.5 6L5 8.5L9.5 3.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>Follow-up email</div>
+                <div class="deliverable-pill"><div class="check"><svg viewBox="0 0 12 12" fill="none"><path d="M2.5 6L5 8.5L9.5 3.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>Proposal brief</div>
+                <div class="deliverable-pill"><div class="check"><svg viewBox="0 0 12 12" fill="none"><path d="M2.5 6L5 8.5L9.5 3.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>Engagement summary</div>
+              </div>
+            </div>
+            <img class="lionel" src="../apps/web/public/assets/images/lionel-hero.webp" alt="" />
+            <div class="ad-url">neuralsummary.com</div>
+            <div class="ad-accent-line"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="pair-divider" />
+
+  <!-- ==========================================
+       CREATIVE 2: Consultant - "The Threat"
+       ========================================== -->
+  <div class="pair-section">
+    <div class="pair-header">
+      <div class="info">
+        <h3>Creative 2: The Threat</h3>
+        <span>Persona: Consultants &middot; Angle: Competitive loss aversion</span>
+      </div>
+    </div>
+    <div class="pair-row">
+      <!-- DARK -->
+      <div class="variant-wrapper dark">
+        <div class="variant-label">
+          <span class="tag dark">Dark</span>
+          <div class="actions">
+            <button class="btn-export" onclick="exportPNG('ad-2-dark', 'fb-ad-consultant-threat')">PNG</button>
+            <button class="btn-export secondary" onclick="exportPNG('ad-2-dark', 'fb-ad-consultant-threat', 2)">@2x</button>
+          </div>
+        </div>
+        <div class="scale-wrapper">
+          <div class="ad ad-2" id="ad-2-dark">
+            <div class="ad-content">
+              <img class="ad-logo" src="../apps/video/public/logos/neural-summary-logo-white.svg" alt="Neural Summary" />
+              <div class="ad-eyebrow"><div class="dot" style="background: #ff6b6b; box-shadow: 0 0 12px rgba(255,107,107,0.6);"></div><span style="color: #ff8a8a;">The meeting just ended</span></div>
+              <h1 class="ad-headline">Your competitor's follow-up arrived <em>2 hours ago.</em></h1>
+              <p class="ad-subtext">They didn't type faster. They used <strong>Neural Summary</strong>.</p>
+              <div class="timeline-compare">
+                <div class="timeline-row them"><div class="timeline-label">Them</div><div class="timeline-bar"></div><div class="timeline-text">3 deliverables sent</div></div>
+                <div class="timeline-row you"><div class="timeline-label">You</div><div class="timeline-bar"></div><div class="timeline-text">Still writing notes...</div></div>
+              </div>
+            </div>
+            <img class="lionel" src="../apps/web/public/assets/images/lionel-hero.webp" alt="" />
+            <div class="ad-url">neuralsummary.com</div>
+            <div class="ad-accent-line"></div>
+          </div>
+        </div>
+      </div>
+      <!-- LIGHT -->
+      <div class="variant-wrapper light">
+        <div class="variant-label">
+          <span class="tag light">Light</span>
+          <div class="actions">
+            <button class="btn-export" onclick="exportPNG('ad-2-light', 'fb-ad-consultant-threat-light')">PNG</button>
+            <button class="btn-export secondary" onclick="exportPNG('ad-2-light', 'fb-ad-consultant-threat-light', 2)">@2x</button>
+          </div>
+        </div>
+        <div class="scale-wrapper">
+          <div class="ad ad-2" id="ad-2-light">
+            <div class="ad-content">
+              <img class="ad-logo" src="../apps/web/public/assets/logos/neural-summary-logo.svg" alt="Neural Summary" />
+              <div class="ad-eyebrow"><div class="dot" style="background: #dc3232; box-shadow: 0 0 12px rgba(220,50,50,0.4);"></div><span style="color: #dc3232;">The meeting just ended</span></div>
+              <h1 class="ad-headline">Your competitor's follow-up arrived <em>2 hours ago.</em></h1>
+              <p class="ad-subtext">They didn't type faster. They used <strong>Neural Summary</strong>.</p>
+              <div class="timeline-compare">
+                <div class="timeline-row them"><div class="timeline-label">Them</div><div class="timeline-bar"></div><div class="timeline-text">3 deliverables sent</div></div>
+                <div class="timeline-row you"><div class="timeline-label">You</div><div class="timeline-bar"></div><div class="timeline-text">Still writing notes...</div></div>
+              </div>
+            </div>
+            <img class="lionel" src="../apps/web/public/assets/images/lionel-hero.webp" alt="" />
+            <div class="ad-url">neuralsummary.com</div>
+            <div class="ad-accent-line"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="pair-divider" />
+
+  <!-- ==========================================
+       CREATIVE 3: Product Leader - "The Gap"
+       ========================================== -->
+  <div class="pair-section">
+    <div class="pair-header">
+      <div class="info">
+        <h3>Creative 3: The Gap</h3>
+        <span>Persona: Product Leaders &middot; Angle: Aspirational provocation</span>
+      </div>
+    </div>
+    <div class="pair-row">
+      <!-- DARK -->
+      <div class="variant-wrapper dark">
+        <div class="variant-label">
+          <span class="tag dark">Dark</span>
+          <div class="actions">
+            <button class="btn-export" onclick="exportPNG('ad-3-dark', 'fb-ad-product-gap')">PNG</button>
+            <button class="btn-export secondary" onclick="exportPNG('ad-3-dark', 'fb-ad-product-gap', 2)">@2x</button>
+          </div>
+        </div>
+        <div class="scale-wrapper">
+          <div class="ad ad-3" id="ad-3-dark">
+            <div class="ad-content">
+              <img class="ad-logo" src="../apps/video/public/logos/neural-summary-logo-white.svg" alt="Neural Summary" />
+              <div class="ad-eyebrow"><div class="dot"></div>For product leaders</div>
+              <h1 class="ad-headline">The best PMs don't write specs <em>from scratch.</em></h1>
+              <p class="ad-subtext">One 30-minute discovery call. <strong>Four ready deliverables.</strong></p>
+              <div class="output-cards">
+                <div class="output-card"><div class="output-card-icon prd"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg></div><span class="output-card-text">Product Spec</span></div>
+                <div class="output-card"><div class="output-card-icon brief"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div><span class="output-card-text">Feature Brief</span></div>
+                <div class="output-card"><div class="output-card-icon insights"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div><span class="output-card-text">User Insights</span></div>
+                <div class="output-card"><div class="output-card-icon sprint"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div><span class="output-card-text">Sprint Notes</span></div>
+              </div>
+            </div>
+            <img class="lionel" src="../apps/web/public/assets/images/lionel-hero.webp" alt="" />
+            <div class="ad-url">neuralsummary.com</div>
+            <div class="ad-accent-line"></div>
+          </div>
+        </div>
+      </div>
+      <!-- LIGHT -->
+      <div class="variant-wrapper light">
+        <div class="variant-label">
+          <span class="tag light">Light</span>
+          <div class="actions">
+            <button class="btn-export" onclick="exportPNG('ad-3-light', 'fb-ad-product-gap-light')">PNG</button>
+            <button class="btn-export secondary" onclick="exportPNG('ad-3-light', 'fb-ad-product-gap-light', 2)">@2x</button>
+          </div>
+        </div>
+        <div class="scale-wrapper">
+          <div class="ad ad-3" id="ad-3-light">
+            <div class="ad-content">
+              <img class="ad-logo" src="../apps/web/public/assets/logos/neural-summary-logo.svg" alt="Neural Summary" />
+              <div class="ad-eyebrow"><div class="dot"></div>For product leaders</div>
+              <h1 class="ad-headline">The best PMs don't write specs <em>from scratch.</em></h1>
+              <p class="ad-subtext">One 30-minute discovery call. <strong>Four ready deliverables.</strong></p>
+              <div class="output-cards">
+                <div class="output-card"><div class="output-card-icon prd"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg></div><span class="output-card-text">Product Spec</span></div>
+                <div class="output-card"><div class="output-card-icon brief"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div><span class="output-card-text">Feature Brief</span></div>
+                <div class="output-card"><div class="output-card-icon insights"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div><span class="output-card-text">User Insights</span></div>
+                <div class="output-card"><div class="output-card-icon sprint"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div><span class="output-card-text">Sprint Notes</span></div>
+              </div>
+            </div>
+            <img class="lionel" src="../apps/web/public/assets/images/lionel-hero.webp" alt="" />
+            <div class="ad-url">neuralsummary.com</div>
+            <div class="ad-accent-line"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="pair-divider" />
+
+  <!-- ==========================================
+       CREATIVE 4: Product Leader - "The Stat"
+       ========================================== -->
+  <div class="pair-section">
+    <div class="pair-header">
+      <div class="info">
+        <h3>Creative 4: The Stat</h3>
+        <span>Persona: Product Leaders &middot; Angle: Proof + result</span>
+      </div>
+    </div>
+    <div class="pair-row">
+      <!-- DARK -->
+      <div class="variant-wrapper dark">
+        <div class="variant-label">
+          <span class="tag dark">Dark</span>
+          <div class="actions">
+            <button class="btn-export" onclick="exportPNG('ad-4-dark', 'fb-ad-product-stat')">PNG</button>
+            <button class="btn-export secondary" onclick="exportPNG('ad-4-dark', 'fb-ad-product-stat', 2)">@2x</button>
+          </div>
+        </div>
+        <div class="scale-wrapper">
+          <div class="ad ad-4" id="ad-4-dark">
+            <div class="ad-content">
+              <img class="ad-logo" src="../apps/video/public/logos/neural-summary-logo-white.svg" alt="Neural Summary" />
+              <div class="ad-eyebrow"><div class="dot"></div>For product leaders</div>
+              <div class="stat-block"><div class="stat-number">40%</div></div>
+              <div class="stat-label">faster to ship.</div>
+              <p class="ad-subtext">Zero meeting notes written. Every insight captured. Every decision documented.</p>
+              <div class="testimonial-card">
+                <div class="testimonial-quote">"I run 12 client calls a week. I was losing 3-4 hours just on post-call writeups. Now that time goes back into actual client work."</div>
+                <div class="testimonial-author">
+                  <img class="testimonial-avatar" src="../apps/web/public/assets/images/avatars/wouter-chompff.webp" alt="WC" style="object-fit: cover;" />
+                  <div><div class="testimonial-name">Wouter Chompff</div><div class="testimonial-role">Founder &middot; One Man Agency</div></div>
+                </div>
+              </div>
+            </div>
+            <img class="lionel" src="../apps/web/public/assets/images/lionel-hero.webp" alt="" />
+            <div class="ad-url">neuralsummary.com</div>
+            <div class="ad-accent-line"></div>
+          </div>
+        </div>
+      </div>
+      <!-- LIGHT -->
+      <div class="variant-wrapper light">
+        <div class="variant-label">
+          <span class="tag light">Light</span>
+          <div class="actions">
+            <button class="btn-export" onclick="exportPNG('ad-4-light', 'fb-ad-product-stat-light')">PNG</button>
+            <button class="btn-export secondary" onclick="exportPNG('ad-4-light', 'fb-ad-product-stat-light', 2)">@2x</button>
+          </div>
+        </div>
+        <div class="scale-wrapper">
+          <div class="ad ad-4" id="ad-4-light">
+            <div class="ad-content">
+              <img class="ad-logo" src="../apps/web/public/assets/logos/neural-summary-logo.svg" alt="Neural Summary" />
+              <div class="ad-eyebrow"><div class="dot"></div>For product leaders</div>
+              <div class="stat-block"><div class="stat-number">40%</div></div>
+              <div class="stat-label">faster to ship.</div>
+              <p class="ad-subtext">Zero meeting notes written. Every insight captured. Every decision documented.</p>
+              <div class="testimonial-card">
+                <div class="testimonial-quote">"I run 12 client calls a week. I was losing 3-4 hours just on post-call writeups. Now that time goes back into actual client work."</div>
+                <div class="testimonial-author">
+                  <img class="testimonial-avatar" src="../apps/web/public/assets/images/avatars/wouter-chompff.webp" alt="WC" style="object-fit: cover;" />
+                  <div><div class="testimonial-name">Wouter Chompff</div><div class="testimonial-role">Founder &middot; One Man Agency</div></div>
+                </div>
+              </div>
+            </div>
+            <img class="lionel" src="../apps/web/public/assets/images/lionel-hero.webp" alt="" />
+            <div class="ad-url">neuralsummary.com</div>
+            <div class="ad-accent-line"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Export All Button -->
+  <div style="text-align: center; margin-top: 16px; margin-bottom: 48px;">
+    <button class="btn-export large" onclick="exportAll()">
+      Export All (16 PNGs)
+    </button>
+    <span style="color: rgba(255,255,255,0.3); font-size: 13px; margin-left: 12px;">1x + @2x &middot; Dark + Light</span>
+  </div>
+
+  <script>
+    function exportPNG(elementId, filename, scale = 1) {
+      const element = document.getElementById(elementId);
+      const btn = event ? event.target : null;
+      if (btn) {
+        const orig = btn.textContent;
+        btn.textContent = '...';
+        btn.disabled = true;
+
+        html2canvas(element, {
+          scale: scale,
+          useCORS: true,
+          allowTaint: true,
+          backgroundColor: null,
+          width: 1080,
+          height: 1080,
+          logging: false,
+        }).then(canvas => {
+          const link = document.createElement('a');
+          const suffix = scale > 1 ? `@${scale}x` : '';
+          link.download = `${filename}${suffix}.png`;
+          link.href = canvas.toDataURL('image/png');
+          link.click();
+          btn.textContent = orig;
+          btn.disabled = false;
+        }).catch(err => {
+          console.error('Export failed:', err);
+          btn.textContent = orig;
+          btn.disabled = false;
+          alert('Export failed. Check console for details.');
+        });
+      }
+    }
+
+    async function exportAll() {
+      const creatives = [
+        { id: 'ad-1-dark', name: 'fb-ad-consultant-gap' },
+        { id: 'ad-1-light', name: 'fb-ad-consultant-gap-light' },
+        { id: 'ad-2-dark', name: 'fb-ad-consultant-threat' },
+        { id: 'ad-2-light', name: 'fb-ad-consultant-threat-light' },
+        { id: 'ad-3-dark', name: 'fb-ad-product-gap' },
+        { id: 'ad-3-light', name: 'fb-ad-product-gap-light' },
+        { id: 'ad-4-dark', name: 'fb-ad-product-stat' },
+        { id: 'ad-4-light', name: 'fb-ad-product-stat-light' },
+      ];
+
+      for (const creative of creatives) {
+        for (const scale of [1, 2]) {
+          const element = document.getElementById(creative.id);
+          try {
+            const canvas = await html2canvas(element, {
+              scale: scale,
+              useCORS: true,
+              allowTaint: true,
+              backgroundColor: null,
+              width: 1080,
+              height: 1080,
+              logging: false,
+            });
+            const link = document.createElement('a');
+            const suffix = scale > 1 ? `@${scale}x` : '';
+            link.download = `${creative.name}${suffix}.png`;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+            await new Promise(r => setTimeout(r, 500));
+          } catch (err) {
+            console.error(`Failed to export ${creative.name}:`, err);
+          }
+        }
+      }
+    }
+  </script>
+</body>
+</html>

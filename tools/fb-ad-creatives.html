@@ -1,0 +1,1179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Neural Summary - Facebook Ad Creatives</title>
+  <link href="https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&family=DM+Mono:wght@400;500&family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: #0f0a1e;
+      font-family: 'Montserrat', sans-serif;
+      padding: 40px 20px;
+      color: white;
+    }
+
+    /* === PAGE LAYOUT === */
+    .page-header {
+      text-align: center;
+      margin-bottom: 48px;
+    }
+
+    .page-header h1 {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 28px;
+      font-weight: 700;
+      color: white;
+      margin-bottom: 8px;
+    }
+
+    .page-header p {
+      font-family: 'DM Mono', monospace;
+      font-size: 14px;
+      color: rgba(255,255,255,0.4);
+    }
+
+    .creative-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 48px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .creative-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .creative-label {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      max-width: 540px;
+    }
+
+    .creative-label .info {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .creative-label .info h3 {
+      font-size: 15px;
+      font-weight: 600;
+      color: white;
+    }
+
+    .creative-label .info span {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      color: rgba(255,255,255,0.35);
+    }
+
+    .creative-label .actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn-export {
+      background: #8D6AFA;
+      color: white;
+      border: none;
+      padding: 8px 20px;
+      border-radius: 8px;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-export:hover {
+      background: #7A5AE0;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(141,106,250,0.35);
+    }
+
+    .btn-export.secondary {
+      background: #3F38A0;
+    }
+
+    .btn-export.secondary:hover {
+      background: #4a42b8;
+    }
+
+    /* Scale preview to fit */
+    .scale-wrapper {
+      transform: scale(0.5);
+      transform-origin: top center;
+      margin-bottom: -540px; /* 1080 * 0.5 offset */
+    }
+
+    /* === AD CANVAS (1080x1080) === */
+    .ad {
+      width: 1080px;
+      height: 1080px;
+      position: relative;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    /* ========================================
+       CREATIVE 1: Consultant - "The Gap"
+       Aspirational provocation
+       ======================================== */
+    .ad-1 {
+      background: #1a1035;
+    }
+
+    /* Ambient gradients (no blur — html2canvas compatible) */
+    .ad-1::before {
+      content: '';
+      position: absolute;
+      inset: -100px;
+      background:
+        radial-gradient(ellipse 70% 50% at 20% 25%, rgba(141,106,250,0.18) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 40% at 80% 75%, rgba(20,208,220,0.12) 0%, transparent 55%),
+        radial-gradient(ellipse 60% 45% at 60% 10%, rgba(141,106,250,0.10) 0%, transparent 50%);
+      z-index: 0;
+    }
+
+    .ad-1 .ad-content {
+      position: relative;
+      z-index: 3;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      padding: 64px 72px 0;
+    }
+
+    /* Logo */
+    .ad-logo {
+      width: 200px;
+      height: auto;
+      margin-bottom: 40px;
+      opacity: 0.85;
+    }
+
+    /* Eyebrow */
+    .ad-eyebrow {
+      font-family: 'DM Mono', monospace;
+      font-size: 18px;
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      color: #14D0DC;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 28px;
+    }
+
+    .ad-eyebrow .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #14D0DC;
+      box-shadow: 0 0 12px rgba(20,208,220,0.6);
+    }
+
+    /* Headline */
+    .ad-1 .ad-headline {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 800;
+      font-size: 64px;
+      line-height: 1.1;
+      color: white;
+      margin-bottom: 32px;
+      max-width: 700px;
+    }
+
+    .ad-1 .ad-headline em {
+      color: #14D0DC;
+      font-style: normal;
+    }
+
+    /* Subtext */
+    .ad-1 .ad-subtext {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 28px;
+      font-weight: 400;
+      color: rgba(255,255,255,0.50);
+      line-height: 1.5;
+      max-width: 580px;
+      margin-bottom: 40px;
+    }
+
+    .ad-1 .ad-subtext strong {
+      color: rgba(255,255,255,0.85);
+      font-weight: 600;
+    }
+
+    /* Deliverable pills */
+    .deliverable-row {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+      max-width: 480px;
+    }
+
+    .deliverable-pill {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(141,106,250,0.15);
+      border: 1px solid rgba(141,106,250,0.35);
+      border-radius: 12px;
+      padding: 14px 22px;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 18px;
+      font-weight: 500;
+      color: rgba(255,255,255,0.85);
+    }
+
+    .deliverable-pill .check {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: #8D6AFA;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .deliverable-pill .check svg {
+      width: 12px;
+      height: 12px;
+    }
+
+    /* Lionel positioned bottom-right */
+    .ad-1 .lionel {
+      position: absolute;
+      bottom: -20px;
+      right: -20px;
+      width: 520px;
+      z-index: 2;
+      opacity: 0.95;
+      filter: drop-shadow(0 0 60px rgba(141,106,250,0.25));
+    }
+
+    /* URL watermark */
+    .ad-url {
+      position: absolute;
+      bottom: 28px;
+      left: 72px;
+      font-family: 'DM Mono', monospace;
+      font-size: 16px;
+      color: rgba(255,255,255,0.25);
+      letter-spacing: 0.5px;
+      z-index: 10;
+    }
+
+    /* Bottom accent line */
+    .ad-accent-line {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(to right, #14D0DC, #8D6AFA, #14D0DC);
+      z-index: 10;
+    }
+
+    /* ========================================
+       CREATIVE 2: Consultant - "The Threat"
+       Competitive loss aversion
+       ======================================== */
+    .ad-2 {
+      background: #120e2a;
+    }
+
+    .ad-2::before {
+      content: '';
+      position: absolute;
+      inset: -100px;
+      background:
+        radial-gradient(ellipse 60% 50% at 50% 30%, rgba(220,50,50,0.08) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 40% at 20% 70%, rgba(141,106,250,0.12) 0%, transparent 55%),
+        radial-gradient(ellipse 55% 45% at 80% 20%, rgba(20,208,220,0.08) 0%, transparent 50%);
+      z-index: 0;
+    }
+
+    .ad-2 .ad-content {
+      position: relative;
+      z-index: 3;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      padding: 64px 72px;
+    }
+
+    .ad-2 .ad-headline {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 800;
+      font-size: 58px;
+      line-height: 1.12;
+      color: white;
+      margin-bottom: 28px;
+      max-width: 680px;
+    }
+
+    .ad-2 .ad-headline em {
+      color: #ff6b6b;
+      font-style: normal;
+    }
+
+    .ad-2 .ad-subtext {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 26px;
+      font-weight: 400;
+      color: rgba(255,255,255,0.45);
+      line-height: 1.5;
+      max-width: 500px;
+      margin-bottom: 36px;
+    }
+
+    .ad-2 .ad-subtext strong {
+      color: rgba(255,255,255,0.80);
+      font-weight: 600;
+    }
+
+    /* Timeline comparison */
+    .timeline-compare {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      margin-bottom: 0;
+      max-width: 560px;
+    }
+
+    .timeline-row {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      padding: 18px 24px;
+      border-radius: 14px;
+    }
+
+    .timeline-row.them {
+      background: rgba(141,106,250,0.12);
+      border: 1px solid rgba(141,106,250,0.25);
+    }
+
+    .timeline-row.you {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .timeline-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 15px;
+      font-weight: 500;
+      width: 60px;
+      flex-shrink: 0;
+    }
+
+    .timeline-row.them .timeline-label {
+      color: #8D6AFA;
+    }
+
+    .timeline-row.you .timeline-label {
+      color: rgba(255,255,255,0.35);
+    }
+
+    .timeline-bar {
+      height: 8px;
+      border-radius: 4px;
+      flex: 1;
+    }
+
+    .timeline-row.them .timeline-bar {
+      background: linear-gradient(to right, #8D6AFA, #14D0DC);
+    }
+
+    .timeline-row.you .timeline-bar {
+      background: rgba(255,255,255,0.1);
+    }
+
+    .timeline-text {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 17px;
+      font-weight: 500;
+      white-space: nowrap;
+    }
+
+    .timeline-row.them .timeline-text {
+      color: rgba(255,255,255,0.85);
+    }
+
+    .timeline-row.you .timeline-text {
+      color: rgba(255,255,255,0.30);
+    }
+
+    /* Lionel for ad-2 — bottom right, looking confrontational */
+    .ad-2 .lionel {
+      position: absolute;
+      bottom: -30px;
+      right: -10px;
+      width: 480px;
+      z-index: 2;
+      opacity: 0.90;
+      filter: drop-shadow(0 0 60px rgba(141,106,250,0.25));
+    }
+
+    /* ========================================
+       CREATIVE 3: Product Leader - "The Gap"
+       Aspirational provocation
+       ======================================== */
+    .ad-3 {
+      background: #141030;
+    }
+
+    .ad-3::before {
+      content: '';
+      position: absolute;
+      inset: -100px;
+      background:
+        radial-gradient(ellipse 65% 50% at 25% 30%, rgba(20,208,220,0.14) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 40% at 75% 70%, rgba(141,106,250,0.16) 0%, transparent 55%),
+        radial-gradient(ellipse 55% 40% at 50% 10%, rgba(20,208,220,0.08) 0%, transparent 50%);
+      z-index: 0;
+    }
+
+    .ad-3 .ad-content {
+      position: relative;
+      z-index: 3;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      padding: 64px 72px 0;
+    }
+
+    .ad-3 .ad-headline {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 800;
+      font-size: 62px;
+      line-height: 1.1;
+      color: white;
+      margin-bottom: 28px;
+      max-width: 700px;
+    }
+
+    .ad-3 .ad-headline em {
+      color: #14D0DC;
+      font-style: normal;
+    }
+
+    .ad-3 .ad-subtext {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 26px;
+      font-weight: 400;
+      color: rgba(255,255,255,0.50);
+      line-height: 1.5;
+      max-width: 560px;
+      margin-bottom: 40px;
+    }
+
+    .ad-3 .ad-subtext strong {
+      color: rgba(255,255,255,0.85);
+      font-weight: 600;
+    }
+
+    /* Output cards grid */
+    .output-cards {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      max-width: 560px;
+    }
+
+    .output-card {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.10);
+      border-radius: 14px;
+      padding: 20px 22px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .output-card-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 18px;
+    }
+
+    .output-card-icon.prd { background: rgba(20,208,220,0.15); color: #14D0DC; }
+    .output-card-icon.brief { background: rgba(141,106,250,0.15); color: #8D6AFA; }
+    .output-card-icon.insights { background: rgba(72,199,142,0.15); color: #48c78e; }
+    .output-card-icon.sprint { background: rgba(232,108,255,0.15); color: #e86cff; }
+
+    .output-card-text {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 17px;
+      font-weight: 500;
+      color: rgba(255,255,255,0.80);
+    }
+
+    /* Lionel for ad-3 */
+    .ad-3 .lionel {
+      position: absolute;
+      bottom: -20px;
+      right: -20px;
+      width: 500px;
+      z-index: 2;
+      opacity: 0.95;
+      filter: drop-shadow(0 0 60px rgba(141,106,250,0.25));
+    }
+
+    /* ========================================
+       CREATIVE 4: Product Leader - "The Stat"
+       Proof + result
+       ======================================== */
+    .ad-4 {
+      background: #110d28;
+    }
+
+    .ad-4::before {
+      content: '';
+      position: absolute;
+      inset: -100px;
+      background:
+        radial-gradient(ellipse 70% 60% at 30% 40%, rgba(141,106,250,0.14) 0%, transparent 55%),
+        radial-gradient(ellipse 50% 50% at 70% 70%, rgba(20,208,220,0.10) 0%, transparent 50%);
+      z-index: 0;
+    }
+
+    .ad-4 .ad-content {
+      position: relative;
+      z-index: 3;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      padding: 64px 72px 0;
+    }
+
+    .ad-4 .stat-block {
+      margin-bottom: 12px;
+    }
+
+    .ad-4 .stat-number {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 800;
+      font-size: 180px;
+      line-height: 1;
+      background: linear-gradient(135deg, #8D6AFA, #14D0DC);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .ad-4 .stat-label {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 700;
+      font-size: 48px;
+      color: white;
+      line-height: 1.2;
+      margin-bottom: 32px;
+    }
+
+    .ad-4 .ad-subtext {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 26px;
+      font-weight: 400;
+      color: rgba(255,255,255,0.45);
+      line-height: 1.5;
+      max-width: 540px;
+      margin-bottom: 40px;
+    }
+
+    .ad-4 .ad-subtext strong {
+      color: rgba(255,255,255,0.80);
+      font-weight: 600;
+    }
+
+    /* Testimonial quote */
+    .testimonial-card {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.10);
+      border-radius: 16px;
+      padding: 28px 32px;
+      max-width: 540px;
+    }
+
+    .testimonial-quote {
+      font-family: 'Merriweather', serif;
+      font-size: 20px;
+      font-style: italic;
+      color: rgba(255,255,255,0.65);
+      line-height: 1.6;
+      margin-bottom: 16px;
+    }
+
+    .testimonial-author {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .testimonial-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #8D6AFA, #14D0DC);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 700;
+      font-size: 14px;
+      color: white;
+    }
+
+    .testimonial-name {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 15px;
+      font-weight: 600;
+      color: rgba(255,255,255,0.75);
+    }
+
+    .testimonial-role {
+      font-family: 'DM Mono', monospace;
+      font-size: 12px;
+      color: rgba(255,255,255,0.35);
+    }
+
+    /* Lionel for ad-4 */
+    .ad-4 .lionel {
+      position: absolute;
+      bottom: -20px;
+      right: -30px;
+      width: 460px;
+      z-index: 2;
+      opacity: 0.90;
+      filter: drop-shadow(0 0 60px rgba(141,106,250,0.25));
+    }
+
+    /* ========================================
+       AD COPY REFERENCE (below each creative)
+       ======================================== */
+    .ad-copy {
+      max-width: 540px;
+      width: 100%;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 12px;
+      padding: 24px 28px;
+      margin-top: 8px;
+    }
+
+    .ad-copy h4 {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: #8D6AFA;
+      margin-bottom: 12px;
+    }
+
+    .ad-copy .copy-section {
+      margin-bottom: 14px;
+    }
+
+    .ad-copy .copy-section:last-child {
+      margin-bottom: 0;
+    }
+
+    .ad-copy .copy-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: rgba(255,255,255,0.30);
+      margin-bottom: 4px;
+    }
+
+    .ad-copy .copy-text {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 13px;
+      color: rgba(255,255,255,0.65);
+      line-height: 1.6;
+    }
+
+    /* ========================================
+       RESPONSIVE SCALING
+       ======================================== */
+    @media (max-width: 1300px) {
+      .creative-grid {
+        grid-template-columns: 1fr;
+        max-width: 600px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Server Note -->
+  <div id="server-note" style="max-width: 600px; margin: 0 auto 32px; padding: 16px 24px; background: rgba(255,107,107,0.1); border: 1px solid rgba(255,107,107,0.25); border-radius: 10px; font-family: 'DM Mono', monospace; font-size: 12px; color: rgba(255,255,255,0.6); text-align: center; display: none;">
+    Images not loading? Serve from project root: <strong style="color: #ff8a8a;">npx serve . -p 3333</strong> then open <strong style="color: #14D0DC;">http://localhost:3333/tools/fb-ad-creatives.html</strong>
+  </div>
+  <script>
+    // Show note if images fail to load (file:// protocol)
+    window.addEventListener('load', () => {
+      const img = document.querySelector('.lionel');
+      if (img && !img.naturalWidth) document.getElementById('server-note').style.display = 'block';
+    });
+  </script>
+
+  <!-- Page Header -->
+  <div class="page-header">
+    <h1>Facebook Ad Creatives</h1>
+    <p>1080 x 1080 &mdash; Optimized for Facebook / Instagram feed</p>
+  </div>
+
+  <!-- Creative Grid -->
+  <div class="creative-grid">
+
+    <!-- ==========================================
+         CREATIVE 1: Consultant - "The Gap"
+         ========================================== -->
+    <div class="creative-wrapper">
+      <div class="creative-label">
+        <div class="info">
+          <h3>Creative 1: The Gap</h3>
+          <span>Persona: Consultants &middot; Angle: Aspirational provocation</span>
+        </div>
+        <div class="actions">
+          <button class="btn-export" onclick="exportPNG('ad-1', 'fb-ad-consultant-gap')">PNG</button>
+          <button class="btn-export secondary" onclick="exportPNG('ad-1', 'fb-ad-consultant-gap', 2)">@2x</button>
+        </div>
+      </div>
+
+      <div class="scale-wrapper">
+        <div class="ad ad-1" id="ad-1">
+          <div class="ad-content">
+            <!-- Logo -->
+            <img class="ad-logo" src="../apps/video/public/logos/neural-summary-logo-white.svg" alt="Neural Summary" />
+
+            <!-- Eyebrow -->
+            <div class="ad-eyebrow">
+              <div class="dot"></div>
+              For consultants
+            </div>
+
+            <!-- Headline -->
+            <h1 class="ad-headline">
+              Top consultants don't write <em>meeting notes.</em>
+            </h1>
+
+            <!-- Subtext -->
+            <p class="ad-subtext">
+              They walk out with <strong>3 deliverables</strong>. Already done.
+            </p>
+
+            <!-- Deliverable pills -->
+            <div class="deliverable-row">
+              <div class="deliverable-pill">
+                <div class="check">
+                  <svg viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M2.5 6L5 8.5L9.5 3.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </div>
+                Follow-up email
+              </div>
+              <div class="deliverable-pill">
+                <div class="check">
+                  <svg viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M2.5 6L5 8.5L9.5 3.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </div>
+                Proposal brief
+              </div>
+              <div class="deliverable-pill">
+                <div class="check">
+                  <svg viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M2.5 6L5 8.5L9.5 3.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </div>
+                Engagement summary
+              </div>
+            </div>
+          </div>
+
+          <!-- Lionel -->
+          <img class="lionel" src="../apps/web/public/assets/images/lionel-hero.webp" alt="" />
+          <!-- Bottom elements -->
+          <div class="ad-url">neuralsummary.com</div>
+          <div class="ad-accent-line"></div>
+        </div>
+      </div>
+
+      <!-- Ad Copy Reference -->
+      <div class="ad-copy">
+        <h4>Facebook Ad Copy</h4>
+        <div class="copy-section">
+          <div class="copy-label">Primary Text</div>
+          <div class="copy-text">After a client call, most consultants spend an hour writing up notes. Top consultants walk out with the follow-up email, engagement summary, and proposal brief already done.<br><br>The difference isn't talent. It's the system.<br><br>Neural Summary turns any recording into consultant-grade deliverables. In minutes, not hours.</div>
+        </div>
+        <div class="copy-section">
+          <div class="copy-label">Headline</div>
+          <div class="copy-text">Turn every client call into 3 ready deliverables.</div>
+        </div>
+        <div class="copy-section">
+          <div class="copy-label">Description</div>
+          <div class="copy-text">Free 14-day trial. No credit card required.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==========================================
+         CREATIVE 2: Consultant - "The Threat"
+         ========================================== -->
+    <div class="creative-wrapper">
+      <div class="creative-label">
+        <div class="info">
+          <h3>Creative 2: The Threat</h3>
+          <span>Persona: Consultants &middot; Angle: Competitive loss aversion</span>
+        </div>
+        <div class="actions">
+          <button class="btn-export" onclick="exportPNG('ad-2', 'fb-ad-consultant-threat')">PNG</button>
+          <button class="btn-export secondary" onclick="exportPNG('ad-2', 'fb-ad-consultant-threat', 2)">@2x</button>
+        </div>
+      </div>
+
+      <div class="scale-wrapper">
+        <div class="ad ad-2" id="ad-2">
+          <div class="ad-content">
+            <!-- Logo -->
+            <img class="ad-logo" src="../apps/video/public/logos/neural-summary-logo-white.svg" alt="Neural Summary" />
+
+            <!-- Eyebrow -->
+            <div class="ad-eyebrow">
+              <div class="dot" style="background: #ff6b6b; box-shadow: 0 0 12px rgba(255,107,107,0.6);"></div>
+              <span style="color: #ff8a8a;">The meeting just ended</span>
+            </div>
+
+            <!-- Headline -->
+            <h1 class="ad-headline">
+              Your competitor's follow-up arrived <em>2 hours ago.</em>
+            </h1>
+
+            <!-- Subtext -->
+            <p class="ad-subtext">
+              They didn't type faster. They used <strong>Neural Summary</strong>.
+            </p>
+
+            <!-- Timeline comparison -->
+            <div class="timeline-compare">
+              <div class="timeline-row them">
+                <div class="timeline-label">Them</div>
+                <div class="timeline-bar"></div>
+                <div class="timeline-text">3 deliverables sent</div>
+              </div>
+              <div class="timeline-row you">
+                <div class="timeline-label">You</div>
+                <div class="timeline-bar"></div>
+                <div class="timeline-text">Still writing notes...</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Lionel -->
+          <img class="lionel" src="../apps/web/public/assets/images/lionel-hero.webp" alt="" />
+          <!-- Bottom elements -->
+          <div class="ad-url">neuralsummary.com</div>
+          <div class="ad-accent-line"></div>
+        </div>
+      </div>
+
+      <!-- Ad Copy Reference -->
+      <div class="ad-copy">
+        <h4>Facebook Ad Copy</h4>
+        <div class="copy-section">
+          <div class="copy-label">Primary Text</div>
+          <div class="copy-text">The client call ended 30 minutes ago.<br><br>Your competitor already sent a follow-up email that quotes the client's exact words. A proposal brief that mirrors every concern raised. An engagement summary with clear next steps.<br><br>You're still staring at your notes trying to remember what was said in minute 12.<br><br>The difference? They recorded the call and let Neural Summary handle the rest.</div>
+        </div>
+        <div class="copy-section">
+          <div class="copy-label">Headline</div>
+          <div class="copy-text">Stop losing deals to faster follow-ups.</div>
+        </div>
+        <div class="copy-section">
+          <div class="copy-label">Description</div>
+          <div class="copy-text">Free 14-day trial. No meeting bots. No installs.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==========================================
+         CREATIVE 3: Product Leader - "The Gap"
+         ========================================== -->
+    <div class="creative-wrapper">
+      <div class="creative-label">
+        <div class="info">
+          <h3>Creative 3: The Gap</h3>
+          <span>Persona: Product Leaders &middot; Angle: Aspirational provocation</span>
+        </div>
+        <div class="actions">
+          <button class="btn-export" onclick="exportPNG('ad-3', 'fb-ad-product-gap')">PNG</button>
+          <button class="btn-export secondary" onclick="exportPNG('ad-3', 'fb-ad-product-gap', 2)">@2x</button>
+        </div>
+      </div>
+
+      <div class="scale-wrapper">
+        <div class="ad ad-3" id="ad-3">
+          <div class="ad-content">
+            <!-- Logo -->
+            <img class="ad-logo" src="../apps/video/public/logos/neural-summary-logo-white.svg" alt="Neural Summary" />
+
+            <!-- Eyebrow -->
+            <div class="ad-eyebrow">
+              <div class="dot"></div>
+              For product leaders
+            </div>
+
+            <!-- Headline -->
+            <h1 class="ad-headline">
+              The best PMs don't write specs <em>from scratch.</em>
+            </h1>
+
+            <!-- Subtext -->
+            <p class="ad-subtext">
+              One 30-minute discovery call. <strong>Four ready deliverables.</strong>
+            </p>
+
+            <!-- Output cards -->
+            <div class="output-cards">
+              <div class="output-card">
+                <div class="output-card-icon prd">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/>
+                  </svg>
+                </div>
+                <span class="output-card-text">Product Spec</span>
+              </div>
+              <div class="output-card">
+                <div class="output-card-icon brief">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                  </svg>
+                </div>
+                <span class="output-card-text">Feature Brief</span>
+              </div>
+              <div class="output-card">
+                <div class="output-card-icon insights">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                  </svg>
+                </div>
+                <span class="output-card-text">User Insights</span>
+              </div>
+              <div class="output-card">
+                <div class="output-card-icon sprint">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+                  </svg>
+                </div>
+                <span class="output-card-text">Sprint Notes</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Lionel -->
+          <img class="lionel" src="../apps/web/public/assets/images/lionel-hero.webp" alt="" />
+          <!-- Bottom elements -->
+          <div class="ad-url">neuralsummary.com</div>
+          <div class="ad-accent-line"></div>
+        </div>
+      </div>
+
+      <!-- Ad Copy Reference -->
+      <div class="ad-copy">
+        <h4>Facebook Ad Copy</h4>
+        <div class="copy-section">
+          <div class="copy-label">Primary Text</div>
+          <div class="copy-text">The best product teams don't write specs from scratch.<br><br>They record discovery calls and let AI turn them into feature briefs, user insight reports, and sprint notes. Automatically.<br><br>No more playing telephone between what users said and what ends up in the spec. Neural Summary captures every insight and structures it into documents your team can ship from.</div>
+        </div>
+        <div class="copy-section">
+          <div class="copy-label">Headline</div>
+          <div class="copy-text">Turn discovery calls into product specs. Automatically.</div>
+        </div>
+        <div class="copy-section">
+          <div class="copy-label">Description</div>
+          <div class="copy-text">Free 14-day trial. No credit card required.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==========================================
+         CREATIVE 4: Product Leader - "The Stat"
+         ========================================== -->
+    <div class="creative-wrapper">
+      <div class="creative-label">
+        <div class="info">
+          <h3>Creative 4: The Stat</h3>
+          <span>Persona: Product Leaders &middot; Angle: Proof + result</span>
+        </div>
+        <div class="actions">
+          <button class="btn-export" onclick="exportPNG('ad-4', 'fb-ad-product-stat')">PNG</button>
+          <button class="btn-export secondary" onclick="exportPNG('ad-4', 'fb-ad-product-stat', 2)">@2x</button>
+        </div>
+      </div>
+
+      <div class="scale-wrapper">
+        <div class="ad ad-4" id="ad-4">
+          <div class="ad-content">
+            <!-- Logo -->
+            <img class="ad-logo" src="../apps/video/public/logos/neural-summary-logo-white.svg" alt="Neural Summary" />
+
+            <!-- Eyebrow -->
+            <div class="ad-eyebrow">
+              <div class="dot"></div>
+              For product leaders
+            </div>
+
+            <!-- Big stat -->
+            <div class="stat-block">
+              <div class="stat-number">40%</div>
+            </div>
+
+            <div class="stat-label">faster to ship.</div>
+
+            <!-- Subtext -->
+            <p class="ad-subtext">
+              Zero meeting notes written. Every insight captured. Every decision documented.
+            </p>
+
+            <!-- Testimonial -->
+            <div class="testimonial-card">
+              <div class="testimonial-quote">
+                "I run 12 client calls a week. I was losing 3-4 hours just on post-call writeups. Now that time goes back into actual client work."
+              </div>
+              <div class="testimonial-author">
+                <img class="testimonial-avatar" src="../apps/web/public/assets/images/avatars/wouter-chompff.webp" alt="WC" style="object-fit: cover;" />
+                <div>
+                  <div class="testimonial-name">Wouter Chompff</div>
+                  <div class="testimonial-role">Founder &middot; One Man Agency</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Lionel -->
+          <img class="lionel" src="../apps/web/public/assets/images/lionel-hero.webp" alt="" />
+          <!-- Bottom elements -->
+          <div class="ad-url">neuralsummary.com</div>
+          <div class="ad-accent-line"></div>
+        </div>
+      </div>
+
+      <!-- Ad Copy Reference -->
+      <div class="ad-copy">
+        <h4>Facebook Ad Copy</h4>
+        <div class="copy-section">
+          <div class="copy-label">Primary Text</div>
+          <div class="copy-text">Wouter runs 12 client calls a week. He used to lose 3-4 hours just writing up notes after each one.<br><br>Now he records the call, and Neural Summary generates the follow-up email, engagement summary, and proposal brief. Automatically.<br><br>That time goes back into actual client work. Not admin.</div>
+        </div>
+        <div class="copy-section">
+          <div class="copy-label">Headline</div>
+          <div class="copy-text">Ship faster. Write zero meeting notes.</div>
+        </div>
+        <div class="copy-section">
+          <div class="copy-label">Description</div>
+          <div class="copy-text">Free 14-day trial. No credit card. No meeting bots.</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Export All Button -->
+  <div style="text-align: center; margin-top: 48px;">
+    <button class="btn-export" onclick="exportAll()" style="padding: 14px 40px; font-size: 15px;">
+      Export All (8 PNGs)
+    </button>
+    <span style="color: rgba(255,255,255,0.3); font-size: 13px; margin-left: 12px;">1x + @2x for each creative</span>
+  </div>
+
+  <script>
+    function exportPNG(elementId, filename, scale = 1) {
+      const element = document.getElementById(elementId);
+      const btn = event ? event.target : null;
+      if (btn) {
+        const orig = btn.textContent;
+        btn.textContent = '...';
+        btn.disabled = true;
+
+        html2canvas(element, {
+          scale: scale,
+          useCORS: true,
+          allowTaint: true,
+          backgroundColor: null,
+          width: 1080,
+          height: 1080,
+          logging: false,
+        }).then(canvas => {
+          const link = document.createElement('a');
+          const suffix = scale > 1 ? `@${scale}x` : '';
+          link.download = `${filename}${suffix}.png`;
+          link.href = canvas.toDataURL('image/png');
+          link.click();
+          btn.textContent = orig;
+          btn.disabled = false;
+        }).catch(err => {
+          console.error('Export failed:', err);
+          btn.textContent = orig;
+          btn.disabled = false;
+          alert('Export failed. Check console for details.');
+        });
+      }
+    }
+
+    async function exportAll() {
+      const creatives = [
+        { id: 'ad-1', name: 'fb-ad-consultant-gap' },
+        { id: 'ad-2', name: 'fb-ad-consultant-threat' },
+        { id: 'ad-3', name: 'fb-ad-product-gap' },
+        { id: 'ad-4', name: 'fb-ad-product-stat' },
+      ];
+
+      for (const creative of creatives) {
+        for (const scale of [1, 2]) {
+          const element = document.getElementById(creative.id);
+          try {
+            const canvas = await html2canvas(element, {
+              scale: scale,
+              useCORS: true,
+              allowTaint: true,
+              backgroundColor: null,
+              width: 1080,
+              height: 1080,
+              logging: false,
+            });
+            const link = document.createElement('a');
+            const suffix = scale > 1 ? `@${scale}x` : '';
+            link.download = `${creative.name}${suffix}.png`;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+            // Small delay between downloads to avoid browser blocking
+            await new Promise(r => setTimeout(r, 500));
+          } catch (err) {
+            console.error(`Failed to export ${creative.name}:`, err);
+          }
+        }
+      }
+    }
+  </script>
+</body>
+</html>
