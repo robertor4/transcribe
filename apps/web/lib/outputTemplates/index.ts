@@ -59,6 +59,9 @@ export { boardUpdateTemplate } from './boardUpdate';
 export { investorUpdateTemplate } from './investorUpdate';
 export { allHandsTalkingPointsTemplate } from './allHandsTalkingPoints';
 export { visionDocumentTemplate } from './visionDocument';
+// Speaker Assessment templates
+export { speakerCommunicationAssessmentTemplate } from './speakerCommunicationAssessment';
+export { personalityProfileTemplate } from './personalityProfile';
 
 // Import templates for registry
 import { transcribeOnlyTemplate } from './transcribeOnly';
@@ -103,6 +106,8 @@ import { boardUpdateTemplate } from './boardUpdate';
 import { investorUpdateTemplate } from './investorUpdate';
 import { allHandsTalkingPointsTemplate } from './allHandsTalkingPoints';
 import { visionDocumentTemplate } from './visionDocument';
+import { speakerCommunicationAssessmentTemplate } from './speakerCommunicationAssessment';
+import { personalityProfileTemplate } from './personalityProfile';
 import { OutputTemplate } from './types';
 
 /**
@@ -160,6 +165,9 @@ export const allTemplates: readonly OutputTemplate[] = [
   investorUpdateTemplate,
   allHandsTalkingPointsTemplate,
   visionDocumentTemplate,
+  // Speaker Assessment templates
+  speakerCommunicationAssessmentTemplate,
+  personalityProfileTemplate,
 ] as const;
 
 /**

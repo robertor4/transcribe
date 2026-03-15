@@ -3595,6 +3595,206 @@ ${PROMPT_INSTRUCTIONS.languageConsistency}`,
       required: ['type', 'title', 'visionStatement', 'strategicPillars'],
     },
   }),
+  // ============================================================
+  // SPEAKER ASSESSMENT TEMPLATES
+  // ============================================================
+
+  createStructuredTemplate({
+    id: 'speakerCommunicationAssessment',
+    name: 'Speaker Communication Assessment',
+    description: 'Assess each speaker\'s individual communication skills',
+    category: 'professional',
+    icon: 'UserCheck',
+    color: 'violet',
+    systemPrompt: `You are an executive communication coach who assesses individual speakers. Analyze each speaker separately based on what they actually said. Be specific, evidence-based, and actionable. Never fabricate quotes or behaviors not present in the transcript. ${PROMPT_INSTRUCTIONS.jsonRequirement}`,
+    userPrompt: `Assess each individual speaker's communication skills from this conversation. Return per-speaker analysis.
+
+${PROMPT_INSTRUCTIONS.useContext}
+
+CRITICAL REQUIREMENTS:
+1. Assess EACH speaker separately — do not combine or average
+2. Use ONLY observable evidence from the transcript
+3. Reference specific moments, phrases, or patterns
+4. Tips must be concrete and immediately actionable
+5. If a speaker has very few utterances, note this and score conservatively
+
+For EACH speaker, score these 6 skills (0-100):
+1. **Clarity** — Were ideas structured and easy to follow?
+2. **Conciseness** — Did they get to the point without rambling?
+3. **Active listening** — Did they acknowledge, build on, or reference others' points?
+4. **Assertiveness** — Did they state positions confidently without being aggressive?
+5. **Questioning** — Did they ask effective questions to deepen understanding?
+6. **Tone & rapport** — Was their tone appropriate and relationship-building?
+
+For each skill provide:
+- score: 0-100
+- evidence: One specific quote or behavior from the transcript (MAX 20 words)
+- tip: One actionable improvement tip (MAX 20 words)
+
+Also provide per speaker:
+- overallScore: Weighted average across all skills
+- topStrength: Their single strongest skill area (one sentence)
+- primaryGrowthArea: The one thing that would most improve their communication (one sentence)
+
+Finally provide:
+- groupDynamic: One sentence on how speakers interacted as a group
+- conversationContext: Brief note on conversation type (meeting, interview, brainstorm, etc.)
+
+${PROMPT_INSTRUCTIONS.languageConsistency}
+
+Return JSON matching this exact schema:
+{
+  "type": "speakerCommunicationAssessment",
+  "speakers": [{ "speaker": "Name", "role": "string|null", "overallScore": number, "skills": [{ "skill": "string", "score": number, "evidence": "string", "tip": "string" }], "topStrength": "string", "primaryGrowthArea": "string" }],
+  "groupDynamic": "string",
+  "conversationContext": "string"
+}`,
+    modelPreference: 'gpt-5',
+    estimatedSeconds: 25,
+    order: 0,
+    tags: ['communication', 'speaker', 'coaching', 'individual', 'assessment'],
+    targetRoles: ['manager', 'coach', 'hr', 'team-lead', 'individual'],
+    templateGroup: 'communication-analysis',
+    jsonSchema: {
+      type: 'object',
+      properties: {
+        type: { type: 'string', const: 'speakerCommunicationAssessment' },
+        speakers: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              speaker: { type: 'string' },
+              role: { type: ['string', 'null'] },
+              overallScore: { type: 'number', minimum: 0, maximum: 100 },
+              skills: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  properties: {
+                    skill: { type: 'string' },
+                    score: { type: 'number', minimum: 0, maximum: 100 },
+                    evidence: { type: 'string' },
+                    tip: { type: 'string' },
+                  },
+                  required: ['skill', 'score', 'evidence', 'tip'],
+                },
+              },
+              topStrength: { type: 'string' },
+              primaryGrowthArea: { type: 'string' },
+            },
+            required: ['speaker', 'overallScore', 'skills', 'topStrength', 'primaryGrowthArea'],
+          },
+        },
+        groupDynamic: { type: 'string' },
+        conversationContext: { type: 'string' },
+      },
+      required: ['type', 'speakers', 'groupDynamic'],
+    },
+  }),
+
+  createStructuredTemplate({
+    id: 'personalityProfile',
+    name: 'Personality Profile',
+    description: 'Infer personality types and communication preferences per speaker',
+    category: 'professional',
+    icon: 'Brain',
+    color: 'purple',
+    systemPrompt: `You are an organizational psychologist who infers personality traits from conversational behavior. You draw on established frameworks (MBTI, DISC, Big Five) to build practical personality sketches. Be transparent about confidence levels — some traits are clearly observable, others are speculative. Never overstate certainty. ${PROMPT_INSTRUCTIONS.jsonRequirement}`,
+    userPrompt: `Analyze each speaker's personality traits and communication style from this conversation. Use an integrated framework drawing from MBTI, DISC, and Big Five.
+
+${PROMPT_INSTRUCTIONS.useContext}
+
+CRITICAL REQUIREMENTS:
+1. Analyze EACH speaker separately
+2. Base ALL inferences on observable behavior in the transcript
+3. Be honest about confidence — mark traits as "low" confidence when evidence is limited
+4. Never claim certainty about personality from a single conversation
+5. Focus on what's useful: how to communicate with and work alongside each person
+
+For EACH speaker, provide:
+- primaryType: A concise label (e.g., "The Structured Strategist", "The Empathetic Facilitator", "The Direct Driver")
+- secondaryType: Optional secondary style if evidence supports it
+
+Assess these trait dimensions:
+1. **Extraversion vs Introversion** — Do they initiate, dominate airtime, or listen and respond selectively?
+2. **Thinking vs Feeling** — Do they prioritize logic/data or people/harmony in their arguments?
+3. **Structure vs Flexibility** — Do they push for plans/deadlines or keep options open?
+4. **Big Picture vs Detail** — Do they focus on vision/strategy or specifics/implementation?
+5. **Assertive vs Accommodating** — Do they push their position or defer to others?
+
+For each trait:
+- dimension: The trait name
+- value: Where they fall (e.g., "Strongly extraverted", "Moderately detail-oriented")
+- confidence: "high", "medium", or "low" based on how much evidence exists
+- evidence: 1-2 specific quotes or behaviors supporting the assessment
+
+Also provide per speaker:
+- communicationPreferences: 2-3 bullet points on how they prefer to communicate (MAX 15 words each)
+- workingWithTips: 2-3 practical tips for colleagues working with this person (MAX 15 words each)
+
+Finally:
+- teamDynamics: How the speakers' personalities interact — complementary or conflicting patterns
+- potentialFriction: Areas where personality differences could cause tension
+- complementaryStrengths: How the group's diverse styles create collective strength
+
+${PROMPT_INSTRUCTIONS.languageConsistency}
+
+Return JSON matching this exact schema:
+{
+  "type": "personalityProfile",
+  "framework": "Integrated (MBTI/DISC/Big Five behavioral indicators)",
+  "speakers": [{ "speaker": "Name", "role": "string|null", "primaryType": "string", "secondaryType": "string|null", "traits": [{ "dimension": "string", "value": "string", "confidence": "high|medium|low", "evidence": ["string"] }], "communicationPreferences": ["string"], "workingWithTips": ["string"] }],
+  "teamDynamics": "string",
+  "potentialFriction": ["string"],
+  "complementaryStrengths": ["string"]
+}`,
+    modelPreference: 'gpt-5',
+    estimatedSeconds: 30,
+    order: 1,
+    tags: ['personality', 'mbti', 'disc', 'big-five', 'speaker', 'profiling'],
+    targetRoles: ['manager', 'coach', 'hr', 'team-lead', 'recruiter'],
+    templateGroup: 'personality-analysis',
+    jsonSchema: {
+      type: 'object',
+      properties: {
+        type: { type: 'string', const: 'personalityProfile' },
+        framework: { type: 'string' },
+        speakers: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              speaker: { type: 'string' },
+              role: { type: ['string', 'null'] },
+              primaryType: { type: 'string' },
+              secondaryType: { type: ['string', 'null'] },
+              traits: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  properties: {
+                    dimension: { type: 'string' },
+                    value: { type: 'string' },
+                    confidence: { type: 'string', enum: ['high', 'medium', 'low'] },
+                    evidence: SCHEMA_FRAGMENTS.stringArray,
+                  },
+                  required: ['dimension', 'value', 'confidence', 'evidence'],
+                },
+              },
+              communicationPreferences: SCHEMA_FRAGMENTS.stringArray,
+              workingWithTips: SCHEMA_FRAGMENTS.stringArray,
+            },
+            required: ['speaker', 'primaryType', 'traits', 'communicationPreferences', 'workingWithTips'],
+          },
+        },
+        teamDynamics: { type: 'string' },
+        potentialFriction: SCHEMA_FRAGMENTS.stringArray,
+        complementaryStrengths: SCHEMA_FRAGMENTS.stringArray,
+      },
+      required: ['type', 'framework', 'speakers'],
+    },
+  }),
 ];
 
 // Helper to get template by ID

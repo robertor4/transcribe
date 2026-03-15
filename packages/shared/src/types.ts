@@ -1186,6 +1186,69 @@ export interface VisionDocumentOutput {
   openQuestions?: string[];
 }
 
+// ============================================================
+// SPEAKER COMMUNICATION ASSESSMENT OUTPUT TYPES
+// ============================================================
+
+/** Individual speaker's communication skill assessment */
+export interface SpeakerSkillScore {
+  skill: string;
+  score: number;
+  evidence: string;
+  tip: string;
+}
+
+/** Per-speaker communication assessment */
+export interface SpeakerAssessment {
+  speaker: string;
+  role?: string;
+  overallScore: number;
+  skills: SpeakerSkillScore[];
+  topStrength: string;
+  primaryGrowthArea: string;
+}
+
+/** Structured speaker communication assessment output */
+export interface SpeakerCommunicationAssessmentOutput {
+  type: 'speakerCommunicationAssessment';
+  speakers: SpeakerAssessment[];
+  groupDynamic: string;
+  conversationContext?: string;
+}
+
+// ============================================================
+// PERSONALITY PROFILE OUTPUT TYPES
+// ============================================================
+
+/** A single personality trait dimension */
+export interface PersonalityTrait {
+  dimension: string;
+  value: string;
+  confidence: 'high' | 'medium' | 'low';
+  evidence: string[];
+}
+
+/** Per-speaker personality profile */
+export interface SpeakerPersonalityProfile {
+  speaker: string;
+  role?: string;
+  primaryType: string;
+  secondaryType?: string;
+  traits: PersonalityTrait[];
+  communicationPreferences: string[];
+  workingWithTips: string[];
+}
+
+/** Structured personality profile output */
+export interface PersonalityProfileOutput {
+  type: 'personalityProfile';
+  framework: string;
+  speakers: SpeakerPersonalityProfile[];
+  teamDynamics?: string;
+  potentialFriction?: string[];
+  complementaryStrengths?: string[];
+}
+
 /** Union type for all structured outputs */
 export type StructuredOutput =
   | ActionItemsOutput
@@ -1236,7 +1299,10 @@ export type StructuredOutput =
   | ExitInterviewOutput
   | GoalSettingOutput
   // Strategy
-  | VisionDocumentOutput;
+  | VisionDocumentOutput
+  // Speaker Assessment
+  | SpeakerCommunicationAssessmentOutput
+  | PersonalityProfileOutput;
 
 /** Type guard to check if content is structured */
 export function isStructuredOutput(content: unknown): content is StructuredOutput {

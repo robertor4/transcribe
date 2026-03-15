@@ -52,6 +52,9 @@ import type {
   GoalSettingOutput,
   // Strategy
   VisionDocumentOutput,
+  // Speaker Assessment
+  SpeakerCommunicationAssessmentOutput,
+  PersonalityProfileOutput,
 } from '@transcribe/shared';
 
 // Legacy templates
@@ -109,6 +112,10 @@ import { GoalSettingTemplate } from './GoalSettingTemplate';
 
 // Strategy
 import { VisionDocumentTemplate } from './VisionDocumentTemplate';
+
+// Speaker Assessment
+import { SpeakerCommunicationAssessmentTemplate } from './SpeakerCommunicationAssessmentTemplate';
+import { PersonalityProfileTemplate } from './PersonalityProfileTemplate';
 
 import { FileText } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
@@ -175,6 +182,10 @@ export { GoalSettingTemplate } from './GoalSettingTemplate';
 
 // Re-export - Strategy
 export { VisionDocumentTemplate } from './VisionDocumentTemplate';
+
+// Re-export - Speaker Assessment
+export { SpeakerCommunicationAssessmentTemplate } from './SpeakerCommunicationAssessmentTemplate';
+export { PersonalityProfileTemplate } from './PersonalityProfileTemplate';
 
 /**
  * Template component registry - add new templates here
@@ -245,6 +256,10 @@ const TEMPLATE_COMPONENTS: Record<
 
   // Strategy
   visionDocument: VisionDocumentTemplate as React.ComponentType<{ data: unknown; analysisId?: string }>,
+
+  // Speaker Assessment
+  speakerCommunicationAssessment: SpeakerCommunicationAssessmentTemplate as React.ComponentType<{ data: unknown; analysisId?: string }>,
+  personalityProfile: PersonalityProfileTemplate as React.ComponentType<{ data: unknown; analysisId?: string }>,
 };
 
 interface OutputRendererProps {
@@ -577,6 +592,19 @@ export function getStructuredOutputPreview(content: StructuredOutput): string {
     case 'visionDocument': {
       const data = content as VisionDocumentOutput;
       return data.title || data.visionStatement?.slice(0, 80) || 'Vision document';
+    }
+
+    // Speaker Assessment
+    case 'speakerCommunicationAssessment': {
+      const data = content as SpeakerCommunicationAssessmentOutput;
+      const count = data.speakers?.length || 0;
+      return `${count} speaker${count !== 1 ? 's' : ''} assessed`;
+    }
+
+    case 'personalityProfile': {
+      const data = content as PersonalityProfileOutput;
+      const count = data.speakers?.length || 0;
+      return `${count} personality profile${count !== 1 ? 's' : ''}`;
     }
 
     default:
