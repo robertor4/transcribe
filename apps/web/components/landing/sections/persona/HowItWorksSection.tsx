@@ -1,5 +1,7 @@
 import { Mic, Sparkles, FileCheck } from 'lucide-react';
 import { SectionTag } from '@/components/landing/shared/SectionTag';
+import ScrollAnimation from '@/components/ScrollAnimation';
+import { ScrollStagger } from '@/components/ScrollStagger';
 
 interface Step {
   number: string;
@@ -29,13 +31,15 @@ export function HowItWorksSection({ translations: t }: HowItWorksSectionProps) {
   return (
     <section className="landing-section" aria-label="How it works">
       <div className="max-w-[1100px] mx-auto px-10 text-center">
-        <SectionTag>{t.tag}</SectionTag>
+        <ScrollAnimation>
+          <SectionTag>{t.tag}</SectionTag>
 
-        <h2 className="text-[clamp(28px,3.5vw,46px)] font-bold leading-[1.15] tracking-tight mb-14">
-          {t.headline1}{t.headline2}<em>{t.headlineEm}</em>
-        </h2>
+          <h2 className="text-[clamp(28px,3.5vw,46px)] font-bold leading-[1.15] tracking-tight mb-14">
+            {t.headline1}{t.headline2}<em>{t.headlineEm}</em>
+          </h2>
+        </ScrollAnimation>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-[900px] mx-auto">
+        <ScrollStagger className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-[900px] mx-auto">
           {t.steps.map((step, i) => {
             const { Icon, color, bg } = stepIcons[i];
             return (
@@ -58,7 +62,7 @@ export function HowItWorksSection({ translations: t }: HowItWorksSectionProps) {
               </div>
             );
           })}
-        </div>
+        </ScrollStagger>
       </div>
     </section>
   );

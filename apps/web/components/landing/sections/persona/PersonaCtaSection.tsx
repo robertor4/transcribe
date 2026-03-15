@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import { SectionTag } from '@/components/landing/shared/SectionTag';
+import ScrollAnimation from '@/components/ScrollAnimation';
 import { FloatingAssetIcons } from '@/components/landing/shared/FloatingAssetIcons';
 import { getAppUrl } from '@/lib/config';
 
@@ -27,7 +28,7 @@ export function PersonaCtaSection({ translations: t, locale }: PersonaCtaSection
 
   return (
     <section className="landing-section !py-[120px] text-center border-t border-white/[0.08]" aria-label="Get started">
-      <div className="max-w-[1100px] mx-auto px-10">
+      <ScrollAnimation className="max-w-[1100px] mx-auto px-10">
         <SectionTag>{t.tag}</SectionTag>
 
         <h2 className="text-[clamp(36px,5vw,64px)] font-bold leading-[1.15] tracking-tight mb-4">
@@ -61,7 +62,7 @@ export function PersonaCtaSection({ translations: t, locale }: PersonaCtaSection
             </span>
           ))}
         </div>
-      </div>
+      </ScrollAnimation>
     </section>
   );
 }

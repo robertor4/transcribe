@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import ScrollAnimation from '@/components/ScrollAnimation';
 
 interface PersonaTestimonialTranslations {
   stars: string;
@@ -18,6 +19,7 @@ export function PersonaTestimonialSection({ translations: t, avatar }: PersonaTe
   return (
     <section className="landing-section" aria-label="Testimonial">
       <div className="max-w-[700px] mx-auto px-10 text-center">
+        <ScrollAnimation animation="scale">
         <div className="bg-white/[0.08] border border-white/[0.08] rounded-2xl p-10 sm:p-12">
           <div className="text-[#ffd93d] text-base mb-5 tracking-wider">{t.stars}</div>
 
@@ -39,6 +41,7 @@ export function PersonaTestimonialSection({ translations: t, avatar }: PersonaTe
             </div>
           </div>
         </div>
+        </ScrollAnimation>
       </div>
     </section>
   );

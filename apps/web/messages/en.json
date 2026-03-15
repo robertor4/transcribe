@@ -3133,7 +3133,9 @@
       "headlineEm": "meeting notes.",
       "body": "They let Neural Summary turn every client call into ready-to-send deliverables. ",
       "bodyStrong": "In minutes, not hours.",
-      "cta": "Try it free"
+      "cta": "Try it free",
+      "ctaSecondary": "See it in action",
+      "socialProof": "Trusted by consultants & agency founders"
     },
     "outputPreview": {
       "tag": "What you'll get",
@@ -3248,7 +3250,9 @@
       "headlineEm": "specs from scratch.",
       "body": "They let Neural Summary turn every product meeting into work-ready documents. ",
       "bodyStrong": "Automatically.",
-      "cta": "Try it free"
+      "cta": "Try it free",
+      "ctaSecondary": "See it in action",
+      "socialProof": "Trusted by product leaders & engineering teams"
     },
     "outputPreview": {
       "tag": "What you'll get",

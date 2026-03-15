@@ -62,6 +62,8 @@ export default async function ForConsultantsPage({ params }: Props) {
             body: t('hero.body'),
             bodyStrong: t('hero.bodyStrong'),
             cta: t('hero.cta'),
+            ctaSecondary: t('hero.ctaSecondary'),
+            socialProof: t('hero.socialProof'),
           }}
         />
 

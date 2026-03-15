@@ -1,5 +1,6 @@
 import { Mail, FileText, Zap } from 'lucide-react';
 import { SectionTag } from '@/components/landing/shared/SectionTag';
+import ScrollAnimation from '@/components/ScrollAnimation';
 
 interface OutputPreviewTranslations {
   tag: string;
@@ -43,27 +44,33 @@ export function OutputPreviewSection(props: OutputPreviewSectionProps) {
   return (
     <section className="landing-section !py-16" aria-label="Output preview">
       <div className="max-w-[1100px] mx-auto px-10 text-center">
-        <SectionTag>{t.tag}</SectionTag>
+        <ScrollAnimation>
+          <SectionTag>{t.tag}</SectionTag>
+        </ScrollAnimation>
 
         <div className="flex justify-center mt-8">
           <div className="relative">
-            {/* Glow behind card */}
-            <div className="absolute inset-0 rounded-2xl bg-[#8D6AFA]/20 blur-[40px] scale-105" />
+            <ScrollAnimation animation="scale">
+              {/* Glow behind card */}
+              <div className="absolute inset-0 rounded-2xl bg-[#8D6AFA]/20 blur-[40px] scale-105" />
 
-            {/* Card */}
-            <div className={`relative bg-white rounded-2xl border border-gray-200 shadow-[0_8px_40px_rgba(141,106,250,0.15)] text-left rotate-[0.5deg] ${variant === 'spec' ? 'w-[600px] max-w-[calc(100vw-80px)]' : 'max-w-[520px]'}`}>
-              {variant === 'email' ? (
-                <EmailCard translations={t as EmailPreviewTranslations} />
-              ) : (
-                <SpecCard translations={t as SpecPreviewTranslations} />
-              )}
-            </div>
+              {/* Card */}
+              <div className={`relative bg-white rounded-2xl border border-gray-200 shadow-[0_8px_40px_rgba(141,106,250,0.15)] text-left rotate-[0.5deg] ${variant === 'spec' ? 'w-[600px] max-w-[calc(100vw-80px)]' : 'max-w-[520px]'}`}>
+                {variant === 'email' ? (
+                  <EmailCard translations={t as EmailPreviewTranslations} />
+                ) : (
+                  <SpecCard translations={t as SpecPreviewTranslations} />
+                )}
+              </div>
+            </ScrollAnimation>
 
             {/* Badge below */}
-            <div className="flex items-center justify-center gap-1.5 mt-6 text-[13px] text-white/50 -rotate-[0.5deg]">
-              <Zap className="w-3.5 h-3.5 text-[#14D0DC]" strokeWidth={2} />
-              {t.badge}
-            </div>
+            <ScrollAnimation delay={200}>
+              <div className="flex items-center justify-center gap-1.5 mt-6 text-[13px] text-white/50 -rotate-[0.5deg]">
+                <Zap className="w-3.5 h-3.5 text-[#14D0DC]" strokeWidth={2} />
+                {t.badge}
+              </div>
+            </ScrollAnimation>
           </div>
         </div>
       </div>

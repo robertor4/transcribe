@@ -81,7 +81,7 @@ export function PublicHeader({ locale }: PublicHeaderProps) {
               <>
                 <a
                   href={`${appUrl}/${locale}/login`}
-                  className="text-sm text-gray-300 hover:text-white font-medium transition-colors"
+                  className="px-3 py-1.5 text-sm text-gray-300 hover:text-white font-medium rounded-full border border-white/20 hover:border-white/40 transition-colors"
                   aria-label="Log in to Neural Summary"
                 >
                   {tLanding('nav.login')}

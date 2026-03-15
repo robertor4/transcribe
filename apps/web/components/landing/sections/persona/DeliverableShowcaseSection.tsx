@@ -1,5 +1,7 @@
 import { Mail, FileText, BarChart3, ClipboardList, Puzzle, Users, Activity } from 'lucide-react';
 import { SectionTag } from '@/components/landing/shared/SectionTag';
+import ScrollAnimation from '@/components/ScrollAnimation';
+import { ScrollStagger } from '@/components/ScrollStagger';
 
 interface DeliverableItem {
   title: string;
@@ -41,17 +43,19 @@ export function DeliverableShowcaseSection({ translations: t, variant }: Deliver
   return (
     <section className="landing-section" aria-label="Deliverables">
       <div className="max-w-[1100px] mx-auto px-10 text-center">
-        <SectionTag>{t.tag}</SectionTag>
+        <ScrollAnimation>
+          <SectionTag>{t.tag}</SectionTag>
 
-        <h2 className="text-[clamp(28px,3.5vw,46px)] font-bold leading-[1.15] tracking-tight mb-4">
-          {t.headline1}<br />{t.headline2}<em>{t.headlineEm}</em>{t.headline3}
-        </h2>
+          <h2 className="text-[clamp(28px,3.5vw,46px)] font-bold leading-[1.15] tracking-tight mb-4">
+            {t.headline1}<br />{t.headline2}<em>{t.headlineEm}</em>{t.headline3}
+          </h2>
 
-        <p className="text-[17px] text-white/60 leading-relaxed max-w-[560px] mx-auto mb-14">
-          {t.body}
-        </p>
+          <p className="text-[17px] text-white/60 leading-relaxed max-w-[560px] mx-auto mb-14">
+            {t.body}
+          </p>
+        </ScrollAnimation>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 max-w-[700px] mx-auto">
+        <ScrollStagger className="grid grid-cols-1 md:grid-cols-2 gap-5 max-w-[700px] mx-auto">
           {t.items.map((item, i) => {
             const { Icon, color, bg } = icons[i];
             return (
@@ -69,7 +73,7 @@ export function DeliverableShowcaseSection({ translations: t, variant }: Deliver
               </div>
             );
           })}
-        </div>
+        </ScrollStagger>
       </div>
     </section>
   );
