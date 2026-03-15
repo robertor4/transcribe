@@ -141,9 +141,14 @@
 
     /* Scale to ~50% to fit side by side */
     .scale-wrapper {
+      width: 540px;
+      height: 540px;
+      overflow: hidden;
+    }
+
+    .scale-wrapper > .ad {
       transform: scale(0.5);
-      transform-origin: top center;
-      margin-bottom: -540px;
+      transform-origin: top left;
     }
 
     /* === AD CANVAS (1080x1080) === */
@@ -163,7 +168,7 @@
     .ad-logo {
       width: 200px;
       height: auto;
-      margin-bottom: 40px;
+      margin-bottom: 64px;
     }
 
     /* Bottom accent line */
@@ -207,7 +212,7 @@
       box-shadow: 0 0 12px rgba(20,208,220,0.6);
     }
     .dark .ad-1 .ad-headline {
-      font-weight: 800; font-size: 64px; line-height: 1.1; color: white;
+      font-weight: 800; font-size: 74px; line-height: 1.08; color: white;
       margin-bottom: 32px; max-width: 700px;
     }
     .dark .ad-1 .ad-headline em { color: #14D0DC; font-style: normal; }
@@ -383,7 +388,7 @@
       box-shadow: 0 0 12px rgba(141,106,250,0.4);
     }
     .light .ad-1 .ad-headline {
-      font-weight: 800; font-size: 64px; line-height: 1.1; color: #1a1035;
+      font-weight: 800; font-size: 74px; line-height: 1.08; color: #1a1035;
       margin-bottom: 32px; max-width: 700px;
     }
     .light .ad-1 .ad-headline em { color: #8D6AFA; font-style: normal; }
@@ -609,7 +614,7 @@
 
   <!-- Server Note -->
   <div id="server-note" style="max-width: 600px; margin: 0 auto 32px; padding: 16px 24px; background: rgba(255,107,107,0.1); border: 1px solid rgba(255,107,107,0.25); border-radius: 10px; font-family: 'DM Mono', monospace; font-size: 12px; color: rgba(255,255,255,0.6); text-align: center; display: none;">
-    Images not loading? Serve from project root: <strong style="color: #ff8a8a;">npx serve . -p 3333</strong> then open <strong style="color: #14D0DC;">http://localhost:3333/tools/fb-ad-creatives-compare.html</strong>
+    Images not loading? Serve from project root: <strong style="color: #ff8a8a;">npx serve . -p 3333</strong> then open <strong style="color: #14D0DC;">http://localhost:3333/tools/socials/fb-ad-creatives-compare.html</strong>
   </div>
   <script>
     window.addEventListener('load', () => {
@@ -622,6 +627,11 @@
   <div class="page-header">
     <h1>Ad Creatives: Dark vs Light</h1>
     <p>1080 x 1080 &mdash; Side-by-side comparison</p>
+    <div style="margin-top: 16px;">
+      <button id="lang-toggle" onclick="toggleLang()" style="font-family: 'DM Mono', monospace; font-size: 13px; font-weight: 500; padding: 8px 20px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.08); color: white; cursor: pointer; transition: all 0.2s;">
+        🇳🇱 Switch to Dutch
+      </button>
+    </div>
   </div>
 
   <!-- ==========================================
@@ -647,17 +657,16 @@
         <div class="scale-wrapper">
           <div class="ad ad-1" id="ad-1-dark">
             <div class="ad-content">
-              <img class="ad-logo" src="../apps/video/public/logos/neural-summary-logo-white.svg" alt="Neural Summary" />
-              <div class="ad-eyebrow"><div class="dot"></div>For consultants</div>
+              <img class="ad-logo" src="../../apps/video/public/logos/neural-summary-logo-white.svg" alt="Neural Summary" />
               <h1 class="ad-headline">Top consultants don't write <em>meeting notes.</em></h1>
-              <p class="ad-subtext">They walk out with <strong>3 deliverables</strong>. Already done.</p>
+              <p class="ad-subtext">They already have <strong>3 deliverables</strong>, ready for sending.</p>
               <div class="deliverable-row">
                 <div class="deliverable-pill"><div class="check"><svg viewBox="0 0 12 12" fill="none"><path d="M2.5 6L5 8.5L9.5 3.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>Follow-up email</div>
-                <div class="deliverable-pill"><div class="check"><svg viewBox="0 0 12 12" fill="none"><path d="M2.5 6L5 8.5L9.5 3.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>Proposal brief</div>
-                <div class="deliverable-pill"><div class="check"><svg viewBox="0 0 12 12" fill="none"><path d="M2.5 6L5 8.5L9.5 3.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>Engagement summary</div>
+                <div class="deliverable-pill"><div class="check"><svg viewBox="0 0 12 12" fill="none"><path d="M2.5 6L5 8.5L9.5 3.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>Meeting summary</div>
+                <div class="deliverable-pill"><div class="check"><svg viewBox="0 0 12 12" fill="none"><path d="M2.5 6L5 8.5L9.5 3.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>Proposal</div>
               </div>
             </div>
-            <img class="lionel" src="../apps/web/public/assets/images/lionel-hero.webp" alt="" />
+            <img class="lionel" src="../../apps/web/public/assets/images/lionel-hero.webp" alt="" />
             <div class="ad-url">neuralsummary.com</div>
             <div class="ad-accent-line"></div>
           </div>
@@ -675,17 +684,16 @@
         <div class="scale-wrapper">
           <div class="ad ad-1" id="ad-1-light">
             <div class="ad-content">
-              <img class="ad-logo" src="../apps/web/public/assets/logos/neural-summary-logo.svg" alt="Neural Summary" />
-              <div class="ad-eyebrow"><div class="dot"></div>For consultants</div>
+              <img class="ad-logo" src="../../apps/web/public/assets/logos/neural-summary-logo.svg" alt="Neural Summary" />
               <h1 class="ad-headline">Top consultants don't write <em>meeting notes.</em></h1>
-              <p class="ad-subtext">They walk out with <strong>3 deliverables</strong>. Already done.</p>
+              <p class="ad-subtext">They already have <strong>3 deliverables</strong>, ready for sending.</p>
               <div class="deliverable-row">
                 <div class="deliverable-pill"><div class="check"><svg viewBox="0 0 12 12" fill="none"><path d="M2.5 6L5 8.5L9.5 3.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>Follow-up email</div>
-                <div class="deliverable-pill"><div class="check"><svg viewBox="0 0 12 12" fill="none"><path d="M2.5 6L5 8.5L9.5 3.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>Proposal brief</div>
-                <div class="deliverable-pill"><div class="check"><svg viewBox="0 0 12 12" fill="none"><path d="M2.5 6L5 8.5L9.5 3.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>Engagement summary</div>
+                <div class="deliverable-pill"><div class="check"><svg viewBox="0 0 12 12" fill="none"><path d="M2.5 6L5 8.5L9.5 3.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>Meeting summary</div>
+                <div class="deliverable-pill"><div class="check"><svg viewBox="0 0 12 12" fill="none"><path d="M2.5 6L5 8.5L9.5 3.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>Proposal</div>
               </div>
             </div>
-            <img class="lionel" src="../apps/web/public/assets/images/lionel-hero.webp" alt="" />
+            <img class="lionel" src="../../apps/web/public/assets/images/lionel-hero.webp" alt="" />
             <div class="ad-url">neuralsummary.com</div>
             <div class="ad-accent-line"></div>
           </div>
@@ -719,16 +727,16 @@
         <div class="scale-wrapper">
           <div class="ad ad-2" id="ad-2-dark">
             <div class="ad-content">
-              <img class="ad-logo" src="../apps/video/public/logos/neural-summary-logo-white.svg" alt="Neural Summary" />
+              <img class="ad-logo" src="../../apps/video/public/logos/neural-summary-logo-white.svg" alt="Neural Summary" />
               <div class="ad-eyebrow"><div class="dot" style="background: #ff6b6b; box-shadow: 0 0 12px rgba(255,107,107,0.6);"></div><span style="color: #ff8a8a;">The meeting just ended</span></div>
               <h1 class="ad-headline">Your competitor's follow-up arrived <em>2 hours ago.</em></h1>
               <p class="ad-subtext">They didn't type faster. They used <strong>Neural Summary</strong>.</p>
               <div class="timeline-compare">
-                <div class="timeline-row them"><div class="timeline-label">Them</div><div class="timeline-bar"></div><div class="timeline-text">3 deliverables sent</div></div>
                 <div class="timeline-row you"><div class="timeline-label">You</div><div class="timeline-bar"></div><div class="timeline-text">Still writing notes...</div></div>
+                <div class="timeline-row them"><div class="timeline-label">Them</div><div class="timeline-bar"></div><div class="timeline-text">3 deliverables sent</div></div>
               </div>
             </div>
-            <img class="lionel" src="../apps/web/public/assets/images/lionel-hero.webp" alt="" />
+            <img class="lionel" src="../../apps/web/public/assets/images/lionel-hero.webp" alt="" />
             <div class="ad-url">neuralsummary.com</div>
             <div class="ad-accent-line"></div>
           </div>
@@ -746,16 +754,16 @@
         <div class="scale-wrapper">
           <div class="ad ad-2" id="ad-2-light">
             <div class="ad-content">
-              <img class="ad-logo" src="../apps/web/public/assets/logos/neural-summary-logo.svg" alt="Neural Summary" />
+              <img class="ad-logo" src="../../apps/web/public/assets/logos/neural-summary-logo.svg" alt="Neural Summary" />
               <div class="ad-eyebrow"><div class="dot" style="background: #dc3232; box-shadow: 0 0 12px rgba(220,50,50,0.4);"></div><span style="color: #dc3232;">The meeting just ended</span></div>
               <h1 class="ad-headline">Your competitor's follow-up arrived <em>2 hours ago.</em></h1>
               <p class="ad-subtext">They didn't type faster. They used <strong>Neural Summary</strong>.</p>
               <div class="timeline-compare">
-                <div class="timeline-row them"><div class="timeline-label">Them</div><div class="timeline-bar"></div><div class="timeline-text">3 deliverables sent</div></div>
                 <div class="timeline-row you"><div class="timeline-label">You</div><div class="timeline-bar"></div><div class="timeline-text">Still writing notes...</div></div>
+                <div class="timeline-row them"><div class="timeline-label">Them</div><div class="timeline-bar"></div><div class="timeline-text">3 deliverables sent</div></div>
               </div>
             </div>
-            <img class="lionel" src="../apps/web/public/assets/images/lionel-hero.webp" alt="" />
+            <img class="lionel" src="../../apps/web/public/assets/images/lionel-hero.webp" alt="" />
             <div class="ad-url">neuralsummary.com</div>
             <div class="ad-accent-line"></div>
           </div>
@@ -789,7 +797,7 @@
         <div class="scale-wrapper">
           <div class="ad ad-3" id="ad-3-dark">
             <div class="ad-content">
-              <img class="ad-logo" src="../apps/video/public/logos/neural-summary-logo-white.svg" alt="Neural Summary" />
+              <img class="ad-logo" src="../../apps/video/public/logos/neural-summary-logo-white.svg" alt="Neural Summary" />
               <div class="ad-eyebrow"><div class="dot"></div>For product leaders</div>
               <h1 class="ad-headline">The best PMs don't write specs <em>from scratch.</em></h1>
               <p class="ad-subtext">One 30-minute discovery call. <strong>Four ready deliverables.</strong></p>
@@ -800,7 +808,7 @@
                 <div class="output-card"><div class="output-card-icon sprint"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div><span class="output-card-text">Sprint Notes</span></div>
               </div>
             </div>
-            <img class="lionel" src="../apps/web/public/assets/images/lionel-hero.webp" alt="" />
+            <img class="lionel" src="../../apps/web/public/assets/images/lionel-hero.webp" alt="" />
             <div class="ad-url">neuralsummary.com</div>
             <div class="ad-accent-line"></div>
           </div>
@@ -818,7 +826,7 @@
         <div class="scale-wrapper">
           <div class="ad ad-3" id="ad-3-light">
             <div class="ad-content">
-              <img class="ad-logo" src="../apps/web/public/assets/logos/neural-summary-logo.svg" alt="Neural Summary" />
+              <img class="ad-logo" src="../../apps/web/public/assets/logos/neural-summary-logo.svg" alt="Neural Summary" />
               <div class="ad-eyebrow"><div class="dot"></div>For product leaders</div>
               <h1 class="ad-headline">The best PMs don't write specs <em>from scratch.</em></h1>
               <p class="ad-subtext">One 30-minute discovery call. <strong>Four ready deliverables.</strong></p>
@@ -829,7 +837,7 @@
                 <div class="output-card"><div class="output-card-icon sprint"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div><span class="output-card-text">Sprint Notes</span></div>
               </div>
             </div>
-            <img class="lionel" src="../apps/web/public/assets/images/lionel-hero.webp" alt="" />
+            <img class="lionel" src="../../apps/web/public/assets/images/lionel-hero.webp" alt="" />
             <div class="ad-url">neuralsummary.com</div>
             <div class="ad-accent-line"></div>
           </div>
@@ -863,7 +871,7 @@
         <div class="scale-wrapper">
           <div class="ad ad-4" id="ad-4-dark">
             <div class="ad-content">
-              <img class="ad-logo" src="../apps/video/public/logos/neural-summary-logo-white.svg" alt="Neural Summary" />
+              <img class="ad-logo" src="../../apps/video/public/logos/neural-summary-logo-white.svg" alt="Neural Summary" />
               <div class="ad-eyebrow"><div class="dot"></div>For product leaders</div>
               <div class="stat-block"><div class="stat-number">40%</div></div>
               <div class="stat-label">faster to ship.</div>
@@ -871,12 +879,12 @@
               <div class="testimonial-card">
                 <div class="testimonial-quote">"I run 12 client calls a week. I was losing 3-4 hours just on post-call writeups. Now that time goes back into actual client work."</div>
                 <div class="testimonial-author">
-                  <img class="testimonial-avatar" src="../apps/web/public/assets/images/avatars/wouter-chompff.webp" alt="WC" style="object-fit: cover;" />
+                  <img class="testimonial-avatar" src="../../apps/web/public/assets/images/avatars/wouter-chompff.webp" alt="WC" style="object-fit: cover;" />
                   <div><div class="testimonial-name">Wouter Chompff</div><div class="testimonial-role">Founder &middot; One Man Agency</div></div>
                 </div>
               </div>
             </div>
-            <img class="lionel" src="../apps/web/public/assets/images/lionel-hero.webp" alt="" />
+            <img class="lionel" src="../../apps/web/public/assets/images/lionel-hero.webp" alt="" />
             <div class="ad-url">neuralsummary.com</div>
             <div class="ad-accent-line"></div>
           </div>
@@ -894,7 +902,7 @@
         <div class="scale-wrapper">
           <div class="ad ad-4" id="ad-4-light">
             <div class="ad-content">
-              <img class="ad-logo" src="../apps/web/public/assets/logos/neural-summary-logo.svg" alt="Neural Summary" />
+              <img class="ad-logo" src="../../apps/web/public/assets/logos/neural-summary-logo.svg" alt="Neural Summary" />
               <div class="ad-eyebrow"><div class="dot"></div>For product leaders</div>
               <div class="stat-block"><div class="stat-number">40%</div></div>
               <div class="stat-label">faster to ship.</div>
@@ -902,12 +910,12 @@
               <div class="testimonial-card">
                 <div class="testimonial-quote">"I run 12 client calls a week. I was losing 3-4 hours just on post-call writeups. Now that time goes back into actual client work."</div>
                 <div class="testimonial-author">
-                  <img class="testimonial-avatar" src="../apps/web/public/assets/images/avatars/wouter-chompff.webp" alt="WC" style="object-fit: cover;" />
+                  <img class="testimonial-avatar" src="../../apps/web/public/assets/images/avatars/wouter-chompff.webp" alt="WC" style="object-fit: cover;" />
                   <div><div class="testimonial-name">Wouter Chompff</div><div class="testimonial-role">Founder &middot; One Man Agency</div></div>
                 </div>
               </div>
             </div>
-            <img class="lionel" src="../apps/web/public/assets/images/lionel-hero.webp" alt="" />
+            <img class="lionel" src="../../apps/web/public/assets/images/lionel-hero.webp" alt="" />
             <div class="ad-url">neuralsummary.com</div>
             <div class="ad-accent-line"></div>
           </div>
@@ -944,7 +952,8 @@
         }).then(canvas => {
           const link = document.createElement('a');
           const suffix = scale > 1 ? `@${scale}x` : '';
-          link.download = `${filename}${suffix}.png`;
+          const langSuffix = currentLang === 'nl' ? '-nl' : '';
+          link.download = `${filename}${langSuffix}${suffix}.png`;
           link.href = canvas.toDataURL('image/png');
           link.click();
           btn.textContent = orig;
@@ -956,6 +965,127 @@
           alert('Export failed. Check console for details.');
         });
       }
+    }
+
+    // === LANGUAGE TOGGLE ===
+    let currentLang = 'en';
+
+    const translations = {
+      // Ad 1 & 2: Consultant creatives
+      'For consultants': 'Voor consultants',
+      'Top consultants don\'t write ': 'Topconsultants maken geen ',
+      'meeting notes.': 'notities.',
+      'They already have ': 'Ze hebben direct ',
+      '3 deliverables': '3 deliverables',
+      ', ready for sending.': ', klaar om te versturen.',
+      'Follow-up email': 'Follow-up e-mail',
+      'Meeting summary': 'Samenvatting',
+      'Proposal': 'Voorstel',
+      // Ad 2: The Threat
+      'The meeting just ended': 'De meeting is net afgelopen',
+      'Your competitor\'s follow-up arrived ': 'De follow-up van je concurrent was er ',
+      '2 hours ago.': '2 uur geleden al.',
+      'They didn\'t type faster. They used ': 'Ze typten niet sneller. Ze gebruikten ',
+      'Neural Summary': 'Neural Summary',
+      'You': 'Jij',
+      'Them': 'Zij',
+      'Still writing notes...': 'Nog steeds aan het schrijven...',
+      '3 deliverables sent': '3 deliverables verstuurd',
+      // Ad 3: Product Leader - The Gap
+      'For product leaders': 'Voor productleiders',
+      'The best PMs don\'t write specs ': 'De beste PM\'s schrijven geen specs ',
+      'from scratch.': 'vanaf nul.',
+      'One 30-minute discovery call. ': 'Eén discovery call van 30 minuten. ',
+      'Four ready deliverables.': 'Vier kant-en-klare deliverables.',
+      'Product Spec': 'Productspec',
+      'Feature Brief': 'Feature brief',
+      'User Insights': 'Gebruikersinzichten',
+      'Sprint Notes': 'Sprint notes',
+      // Ad 4: Product Leader - The Stat
+      'faster to ship.': 'sneller opleveren.',
+      'Zero meeting notes written. Every insight captured. Every decision documented.': 'Nul gespreksnotities geschreven. Elk inzicht vastgelegd. Elke beslissing gedocumenteerd.',
+      '"I run 12 client calls a week. I was losing 3-4 hours just on post-call writeups. Now that time goes back into actual client work."': '"Ik doe 12 klantgesprekken per week. Ik verloor 3-4 uur aan uitwerkingen na elk gesprek. Nu gaat die tijd terug naar daadwerkelijk klantwerk."',
+      'Founder': 'Oprichter',
+    };
+
+    // Build reverse map
+    const reverseTranslations = {};
+    for (const [en, nl] of Object.entries(translations)) {
+      reverseTranslations[nl] = en;
+    }
+
+    function toggleLang() {
+      const targetLang = currentLang === 'en' ? 'nl' : 'en';
+      const map = currentLang === 'en' ? translations : reverseTranslations;
+      const btn = document.getElementById('lang-toggle');
+
+      // Get all text-bearing elements inside ad creatives
+      const ads = document.querySelectorAll('.ad');
+      ads.forEach(ad => {
+        const walker = document.createTreeWalker(ad, NodeFilter.SHOW_TEXT, null, false);
+        const textNodes = [];
+        while (walker.nextNode()) textNodes.push(walker.currentNode);
+
+        textNodes.forEach(node => {
+          const trimmed = node.textContent.trim();
+          if (trimmed && map[trimmed]) {
+            node.textContent = node.textContent.replace(trimmed, map[trimmed]);
+          }
+        });
+
+        // Handle innerHTML for headlines with <em> tags
+        ad.querySelectorAll('.ad-headline').forEach(el => {
+          for (const [from, to] of Object.entries(map)) {
+            if (el.innerHTML.includes(from)) {
+              el.innerHTML = el.innerHTML.replaceAll(from, to);
+            }
+          }
+        });
+
+        // Handle innerHTML for subtexts with <strong> tags
+        ad.querySelectorAll('.ad-subtext').forEach(el => {
+          for (const [from, to] of Object.entries(map)) {
+            if (el.innerHTML.includes(from)) {
+              el.innerHTML = el.innerHTML.replaceAll(from, to);
+            }
+          }
+        });
+
+        // Handle testimonial quotes
+        ad.querySelectorAll('.testimonial-quote').forEach(el => {
+          for (const [from, to] of Object.entries(map)) {
+            if (el.innerHTML.includes(from)) {
+              el.innerHTML = el.innerHTML.replaceAll(from, to);
+            }
+          }
+        });
+
+        // Handle stat labels
+        ad.querySelectorAll('.stat-label').forEach(el => {
+          for (const [from, to] of Object.entries(map)) {
+            if (el.textContent.includes(from)) {
+              el.textContent = el.textContent.replace(from, to);
+            }
+          }
+        });
+
+        // Handle testimonial role (Founder -> Oprichter)
+        ad.querySelectorAll('.testimonial-role').forEach(el => {
+          for (const [from, to] of Object.entries(map)) {
+            if (el.textContent.includes(from)) {
+              el.textContent = el.textContent.replace(from, to);
+            }
+          }
+        });
+
+        // Update URL to locale-specific landing page
+        ad.querySelectorAll('.ad-url').forEach(el => {
+          el.textContent = targetLang === 'nl' ? 'neuralsummary.com/nl' : 'neuralsummary.com';
+        });
+      });
+
+      currentLang = targetLang;
+      btn.textContent = targetLang === 'nl' ? '🇬🇧 Switch to English' : '🇳🇱 Switch to Dutch';
     }
 
     async function exportAll() {
@@ -985,7 +1115,8 @@
             });
             const link = document.createElement('a');
             const suffix = scale > 1 ? `@${scale}x` : '';
-            link.download = `${creative.name}${suffix}.png`;
+            const langSuffix = currentLang === 'nl' ? '-nl' : '';
+            link.download = `${creative.name}${langSuffix}${suffix}.png`;
             link.href = canvas.toDataURL('image/png');
             link.click();
             await new Promise(r => setTimeout(r, 500));

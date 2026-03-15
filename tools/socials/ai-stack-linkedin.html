@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My AI Stack - LinkedIn Post</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <style>
+    @font-face {
+      font-family: 'Geist';
+      src: url('https://cdn.jsdelivr.net/npm/geist@1.3.1/dist/fonts/geist-sans/Geist-Regular.woff2') format('woff2');
+      font-weight: 400;
+      font-style: normal;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: 'Geist';
+      src: url('https://cdn.jsdelivr.net/npm/geist@1.3.1/dist/fonts/geist-sans/Geist-Medium.woff2') format('woff2');
+      font-weight: 500;
+      font-style: normal;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: 'Geist';
+      src: url('https://cdn.jsdelivr.net/npm/geist@1.3.1/dist/fonts/geist-sans/Geist-SemiBold.woff2') format('woff2');
+      font-weight: 600;
+      font-style: normal;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: 'Geist';
+      src: url('https://cdn.jsdelivr.net/npm/geist@1.3.1/dist/fonts/geist-sans/Geist-Bold.woff2') format('woff2');
+      font-weight: 700;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: #1a1a2e;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      font-family: 'Geist', -apple-system, BlinkMacSystemFont, sans-serif;
+      padding: 40px 20px;
+      gap: 24px;
+    }
+
+    .toolbar {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .toolbar button {
+      background: #8D6AFA;
+      color: white;
+      border: none;
+      padding: 12px 28px;
+      border-radius: 10px;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .toolbar button:hover {
+      background: #7A5AE0;
+      transform: translateY(-1px);
+      box-shadow: 0 8px 24px rgba(141,106,250,0.35);
+    }
+
+    .toolbar .hint {
+      color: rgba(255,255,255,0.4);
+      font-size: 13px;
+    }
+
+    /* ============================
+       LINKEDIN CARD (1200x1200)
+       ============================ */
+    .linkedin-card {
+      width: 1200px;
+      height: 1200px;
+      background: #F5F7FA;
+      position: relative;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    /* Centered white card */
+    .card-inner {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 1020px;
+      background: #FFFFFF;
+      border-radius: 28px;
+      padding: 72px 80px 64px;
+      box-shadow:
+        0 1px 3px rgba(0,0,0,0.04),
+        0 8px 32px rgba(0,0,0,0.06);
+    }
+
+    /* Decorative dots */
+    .dot {
+      position: absolute;
+      border-radius: 50%;
+      border: 2px solid;
+      opacity: 0.45;
+    }
+    .dot-1 { width: 14px; height: 14px; top: 90px; right: 110px; border-color: #94C4CB; }
+    .dot-2 { width: 10px; height: 10px; top: 310px; left: 40px; border-color: #94C4CB; }
+    .dot-3 { width: 12px; height: 12px; bottom: 90px; left: 60px; border-color: #94C4CB; }
+    .dot-4 { width: 8px; height: 8px; top: 480px; right: 50px; border-color: #B8C4CB; }
+    .dot-5 { width: 11px; height: 11px; bottom: 180px; right: 95px; border-color: #94C4CB; }
+
+    /* Title */
+    .title {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 700;
+      font-size: 48px;
+      color: #1E293B;
+      text-align: center;
+      margin-bottom: 44px;
+      letter-spacing: -0.5px;
+    }
+
+    /* Stack rows */
+    .stack-rows {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      margin-bottom: 48px;
+    }
+
+    .stack-row {
+      display: flex;
+      align-items: center;
+      border-radius: 16px;
+      padding: 24px 32px;
+    }
+
+    /* Brand-specific row backgrounds */
+    .row-claude     { background: linear-gradient(135deg, rgba(217, 119, 87, 0.07) 0%, rgba(217, 119, 87, 0.14) 100%); }
+    .row-chatgpt    { background: linear-gradient(135deg, rgba(16, 163, 127, 0.06) 0%, rgba(16, 163, 127, 0.12) 100%); }
+    .row-gemini     { background: linear-gradient(135deg, rgba(66, 133, 244, 0.06) 0%, rgba(155, 114, 203, 0.12) 100%); }
+    .row-perplexity { background: linear-gradient(135deg, rgba(32, 178, 170, 0.07) 0%, rgba(32, 178, 170, 0.15) 100%); }
+
+    /* Logo container */
+    .logo-icon {
+      width: 44px;
+      height: 44px;
+      margin-right: 22px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .logo-icon svg {
+      width: 36px;
+      height: 36px;
+    }
+
+    /* Tool info */
+    .tool-info {
+      flex: 1;
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+    }
+
+    .tool-name {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 700;
+      font-size: 28px;
+    }
+
+    /* Brand-colored tool names */
+    .name-claude     { color: #D97757; }
+    .name-chatgpt    { color: #10A37F; }
+    .name-gemini     { color: #4285F4; }
+    .name-perplexity { color: #20B2AA; }
+
+    .tool-dash {
+      font-family: 'Geist', sans-serif;
+      font-weight: 400;
+      font-size: 22px;
+      color: #94A3B8;
+    }
+
+    .tool-use {
+      font-family: 'Geist', sans-serif;
+      font-weight: 400;
+      font-size: 22px;
+      color: #64748B;
+    }
+
+    /* Price */
+    .price-area {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      flex-shrink: 0;
+    }
+
+    .price-divider {
+      width: 1px;
+      height: 36px;
+      background: rgba(148, 163, 184, 0.3);
+    }
+
+    .price {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 700;
+      font-size: 28px;
+      color: #1E293B;
+      min-width: 80px;
+      text-align: right;
+    }
+
+    /* Total */
+    .total {
+      text-align: center;
+      margin-bottom: 16px;
+    }
+
+    .total-amount {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 700;
+      font-size: 44px;
+      color: #14B8A6;
+    }
+
+    .total-period {
+      font-family: 'Geist', sans-serif;
+      font-weight: 400;
+      font-size: 36px;
+      color: #475569;
+    }
+
+    /* Tagline */
+    .tagline {
+      font-family: 'Geist', sans-serif;
+      font-weight: 400;
+      font-size: 22px;
+      color: #64748B;
+      text-align: center;
+      letter-spacing: 0.2px;
+    }
+  </style>
+</head>
+<body>
+  <!-- Export toolbar -->
+  <div class="toolbar">
+    <button onclick="exportPNG()">Download PNG</button>
+    <span class="hint">1200 x 1200 — optimized for LinkedIn</span>
+  </div>
+
+  <!-- LinkedIn card -->
+  <div class="linkedin-card" id="capture">
+    <div class="card-inner">
+      <!-- Decorative dots -->
+      <div class="dot dot-1"></div>
+      <div class="dot dot-2"></div>
+      <div class="dot dot-3"></div>
+      <div class="dot dot-4"></div>
+      <div class="dot dot-5"></div>
+
+      <!-- Title -->
+      <h1 class="title">My AI Stack</h1>
+
+      <!-- Stack rows -->
+      <div class="stack-rows">
+
+        <!-- Claude — official Bootstrap Icons path, brand color #D97757 -->
+        <div class="stack-row row-claude">
+          <div class="logo-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="#D97757">
+              <path d="m3.127 10.604 3.135-1.76.053-.153-.053-.085H6.11l-.525-.032-1.791-.048-1.554-.065-1.505-.08-.38-.081L0 7.832l.036-.234.32-.214.455.04 1.009.069 1.513.105 1.097.064 1.626.17h.259l.036-.105-.089-.065-.068-.064-1.566-1.062-1.695-1.121-.887-.646-.48-.327-.243-.306-.104-.67.435-.48.585.04.15.04.593.456 1.267.981 1.654 1.218.242.202.097-.068.012-.049-.109-.181-.9-1.626-.96-1.655-.428-.686-.113-.411a2 2 0 0 1-.068-.484l.496-.674L4.446 0l.662.089.279.242.411.94.666 1.48 1.033 2.014.302.597.162.553.06.17h.105v-.097l.085-1.134.157-1.392.154-1.792.052-.504.25-.605.497-.327.387.186.319.456-.045.294-.19 1.23-.37 1.93-.243 1.29h.142l.161-.16.654-.868 1.097-1.372.484-.545.565-.601.363-.287h.686l.505.751-.226.775-.707.895-.585.759-.839 1.13-.524.904.048.072.125-.012 1.897-.403 1.024-.186 1.223-.21.553.258.06.263-.218.536-1.307.323-1.533.307-2.284.54-.028.02.032.04 1.029.098.44.024h1.077l2.005.15.525.346.315.424-.053.323-.807.411-3.631-.863-.872-.218h-.12v.073l.726.71 1.331 1.202 1.667 1.55.084.383-.214.302-.226-.032-1.464-1.101-.565-.497-1.28-1.077h-.084v.113l.295.432 1.557 2.34.08.718-.112.234-.404.141-.444-.08-.911-1.28-.94-1.44-.759-1.291-.093.053-.448 4.821-.21.246-.484.186-.403-.307-.214-.496.214-.98.258-1.28.21-1.016.19-1.263.112-.42-.008-.028-.092.012-.953 1.307-1.448 1.957-1.146 1.227-.274.109-.477-.247.045-.44.266-.39 1.586-2.018.956-1.25.617-.723-.004-.105h-.036l-4.212 2.736-.75.096-.324-.302.04-.496.154-.162 1.267-.871z"/>
+            </svg>
+          </div>
+          <div class="tool-info">
+            <span class="tool-name name-claude">Claude</span>
+            <span class="tool-dash">–</span>
+            <span class="tool-use">daily driver</span>
+          </div>
+          <div class="price-area">
+            <div class="price-divider"></div>
+            <span class="price">€180</span>
+          </div>
+        </div>
+
+        <!-- ChatGPT — official Bootstrap Icons path, brand color #10A37F -->
+        <div class="stack-row row-chatgpt">
+          <div class="logo-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="#10A37F">
+              <path d="M14.949 6.547a3.94 3.94 0 0 0-.348-3.273 4.11 4.11 0 0 0-4.4-1.934 4.1 4.1 0 0 0-1.778-.213 4.15 4.15 0 0 0-2.118-.114 4.1 4.1 0 0 0-1.891.948 4.04 4.04 0 0 0-1.158 1.753 4.1 4.1 0 0 0-1.563.679A4 4 0 0 0 .554 4.72a3.99 3.99 0 0 0 .502 4.731 3.94 3.94 0 0 0 .346 3.274 4.11 4.11 0 0 0 4.402 1.933c.382.425.852.764 1.377.995.526.231 1.095.35 1.67.346 1.78.002 3.358-1.132 3.901-2.804a4.1 4.1 0 0 0 1.563-.68 4 4 0 0 0 1.14-1.253 3.99 3.99 0 0 0-.506-4.716m-6.097 8.406a3.05 3.05 0 0 1-1.945-.694l.096-.054 3.23-1.838a.53.53 0 0 0 .265-.455v-4.49l1.366.778q.02.011.025.035v3.722c-.003 1.653-1.361 2.992-3.037 2.996m-6.53-2.75a2.95 2.95 0 0 1-.36-2.01l.095.057L5.29 12.09a.53.53 0 0 0 .527 0l3.949-2.246v1.555a.05.05 0 0 1-.022.041L6.473 13.3c-1.454.826-3.311.335-4.15-1.098m-.85-6.94A3.02 3.02 0 0 1 3.07 3.949v3.785a.51.51 0 0 0 .262.451l3.93 2.237-1.366.779a.05.05 0 0 1-.048 0L2.585 9.342a2.98 2.98 0 0 1-1.113-4.094zm11.216 2.571L8.747 5.576l1.362-.776a.05.05 0 0 1 .048 0l3.265 1.86a3 3 0 0 1 1.173 1.207 2.96 2.96 0 0 1-.27 3.2 3.05 3.05 0 0 1-1.36.997V8.279a.52.52 0 0 0-.276-.445m1.36-2.015-.097-.057-3.226-1.855a.53.53 0 0 0-.53 0L6.249 6.153V4.598a.04.04 0 0 1 .019-.04L9.533 2.7a3.07 3.07 0 0 1 3.257.139c.474.325.843.778 1.066 1.303.223.526.289 1.103.191 1.664zM5.503 8.575 4.139 7.8a.05.05 0 0 1-.026-.037V4.049c0-.57.166-1.127.476-1.607s.752-.864 1.275-1.105a3.08 3.08 0 0 1 3.234.41l-.096.054-3.23 1.838a.53.53 0 0 0-.265.455zm.742-1.577 1.758-1 1.762 1v2l-1.755 1-1.762-1z"/>
+            </svg>
+          </div>
+          <div class="tool-info">
+            <span class="tool-name name-chatgpt">ChatGPT</span>
+            <span class="tool-dash">–</span>
+            <span class="tool-use">scratchpad</span>
+          </div>
+          <div class="price-area">
+            <div class="price-divider"></div>
+            <span class="price">€22</span>
+          </div>
+        </div>
+
+        <!-- Gemini — official sparkle shape from Google, with gradient -->
+        <div class="stack-row row-gemini">
+          <div class="logo-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 65 65" fill="none">
+              <path d="M32.447 0c.68 0 1.273.465 1.439 1.125a38.904 38.904 0 001.999 5.905c2.152 5 5.105 9.376 8.854 13.125 3.751 3.75 8.126 6.703 13.125 8.855a38.98 38.98 0 005.906 1.999c.66.166 1.124.758 1.124 1.438 0 .68-.464 1.273-1.125 1.439a38.902 38.902 0 00-5.905 1.999c-5 2.152-9.375 5.105-13.125 8.854-3.749 3.751-6.702 8.126-8.854 13.125a38.973 38.973 0 00-2 5.906 1.485 1.485 0 01-1.438 1.124c-.68 0-1.272-.464-1.438-1.125a38.913 38.913 0 00-2-5.905c-2.151-5-5.103-9.375-8.854-13.125-3.75-3.749-8.125-6.702-13.125-8.854a38.973 38.973 0 00-5.905-2A1.485 1.485 0 010 32.448c0-.68.465-1.272 1.125-1.438a38.903 38.903 0 005.905-2c5-2.151 9.376-5.104 13.125-8.854 3.75-3.749 6.703-8.125 8.855-13.125a38.972 38.972 0 001.999-5.905A1.485 1.485 0 0132.447 0z" fill="url(#gemini_gradient)"/>
+              <defs>
+                <linearGradient id="gemini_gradient" x1="0" y1="0" x2="65" y2="65" gradientUnits="userSpaceOnUse">
+                  <stop offset="0" stop-color="#4285F4"/>
+                  <stop offset="0.5" stop-color="#9B72CB"/>
+                  <stop offset="1" stop-color="#D96570"/>
+                </linearGradient>
+              </defs>
+            </svg>
+          </div>
+          <div class="tool-info">
+            <span class="tool-name name-gemini">Gemini</span>
+            <span class="tool-dash">–</span>
+            <span class="tool-use">multimodal</span>
+          </div>
+          <div class="price-area">
+            <div class="price-divider"></div>
+            <span class="price">€20</span>
+          </div>
+        </div>
+
+        <!-- Perplexity — official Bootstrap Icons path, brand color #20B2AA -->
+        <div class="stack-row row-perplexity">
+          <div class="logo-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="#20B2AA">
+              <path fill-rule="evenodd" d="M8 .188a.5.5 0 0 1 .503.5V4.03l3.022-2.92.059-.048a.51.51 0 0 1 .49-.054.5.5 0 0 1 .306.46v3.247h1.117l.1.01a.5.5 0 0 1 .403.49v5.558a.5.5 0 0 1-.503.5H12.38v3.258a.5.5 0 0 1-.312.462.51.51 0 0 1-.55-.11l-3.016-3.018v3.448c0 .275-.225.5-.503.5a.5.5 0 0 1-.503-.5v-3.448l-3.018 3.019a.51.51 0 0 1-.548.11.5.5 0 0 1-.312-.463v-3.258H2.503a.5.5 0 0 1-.503-.5V5.215l.01-.1c.047-.229.25-.4.493-.4H3.62V1.469l.006-.074a.5.5 0 0 1 .302-.387.51.51 0 0 1 .547.102l3.023 2.92V.687c0-.276.225-.5.503-.5M4.626 9.333v3.984l2.87-2.872v-4.01zm3.877 1.113 2.871 2.871V9.333l-2.87-2.897zm3.733-1.668a.5.5 0 0 1 .145.35v1.145h.612V5.715H9.201zm-9.23 1.495h.613V9.13c0-.131.052-.257.145-.35l3.033-3.064h-3.79zm1.62-5.558H6.76L4.626 2.652zm4.613 0h2.134V2.652z"/>
+            </svg>
+          </div>
+          <div class="tool-info">
+            <span class="tool-name name-perplexity">Perplexity</span>
+            <span class="tool-dash">–</span>
+            <span class="tool-use">news</span>
+          </div>
+          <div class="price-area">
+            <div class="price-divider"></div>
+            <span class="price">€20</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Total -->
+      <div class="total">
+        <span class="total-amount">€242</span>
+        <span class="total-period"> / month</span>
+      </div>
+
+      <!-- Tagline -->
+      <p class="tagline">The tools change. The skill compounds.</p>
+    </div>
+  </div>
+
+  <script>
+    function exportPNG() {
+      const el = document.getElementById('capture');
+      html2canvas(el, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: '#F5F7FA',
+      }).then(canvas => {
+        const link = document.createElement('a');
+        link.download = 'my-ai-stack-linkedin.png';
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+      });
+    }
+  </script>
+</body>
+</html>

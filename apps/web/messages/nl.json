@@ -3114,5 +3114,251 @@
       "body": "Begin vandaag nog met het omzetten van gesprekken in werkklare documenten.",
       "button": "Aan de slag"
     }
+  },
+  "forConsultants": {
+    "meta": {
+      "title": "Neural Summary voor consultants — Sneller leveren. Meer winnen.",
+      "description": "Zet elk klantgesprek om in een follow-up e-mail, voorstelbrief en opdrachtoverzicht. Automatisch."
+    },
+    "hero": {
+      "eyebrow": "Voor consultants",
+      "headline1": "Topconsultants maken geen ",
+      "headlineEm": "notities.",
+      "body": "Ze laten Neural Summary elk klantgesprek omzetten in kant-en-klare deliverables. ",
+      "bodyStrong": "In minuten, niet uren.",
+      "cta": "Probeer gratis",
+      "ctaSecondary": "Bekijk het in actie",
+      "socialProof": "Vertrouwd door consultants en agency-oprichters"
+    },
+    "outputPreview": {
+      "tag": "Wat je krijgt",
+      "badge": "Gegenereerd in 2 minuten",
+      "label": "Klant follow-up",
+      "to": "Aan:",
+      "toValue": "sarah.chen@meridian.com",
+      "subject": "Onderwerp:",
+      "subjectValue": "Vervolgstappen — Q3 roadmap-afstemming",
+      "greeting": "Hoi Sarah,",
+      "body": "Goed om je vandaag te spreken. Hier zijn de belangrijkste punten die we hebben afgestemd:",
+      "bullets": [
+        "Budget goedgekeurd voor Fase 1 (€45K)",
+        "Tijdlijn: kick-off vóór 28 maart",
+        "Jij stuurt de merkrichtlijnen vóór vrijdag"
+      ],
+      "closing": "Ik heb het voorstel maandag klaar."
+    },
+    "painGap": {
+      "tag": "De realiteit",
+      "headline1": "De follow-up van je concurrent ",
+      "headline2": "was er ",
+      "headlineEm": "2 uur geleden al.",
+      "body": "Ze typten niet sneller. Ze gebruikten een systeem.",
+      "them": {
+        "label": "Je concurrent",
+        "step1": "Klantgesprek eindigt",
+        "step2": "Neemt op met Neural Summary",
+        "step3": "Follow-up e-mail binnen 15 min"
+      },
+      "you": {
+        "label": "Jij",
+        "step1": "Klantgesprek eindigt",
+        "step2": "Opent notitie-app, begint te typen",
+        "step3": "2 uur later nog steeds aan het schrijven"
+      }
+    },
+    "deliverables": {
+      "tag": "Je deliverables, geautomatiseerd",
+      "headline1": "Eén klantgesprek. ",
+      "headline2": "Vier ",
+      "headlineEm": "kant-en-klare",
+      "headline3": " deliverables.",
+      "body": "Elk klantgesprek bevat een follow-up, een brief, een samenvatting en notities. Neural Summary haalt ze er allemaal uit.",
+      "followUp": {
+        "title": "Follow-up e-mail",
+        "desc": "Professionele klant-follow-up met hun exacte woorden. Klaar om te versturen."
+      },
+      "proposal": {
+        "title": "Voorstelbrief",
+        "desc": "Gestructureerde brief met scope, tijdlijn en belangrijke beslissingen uit het gesprek."
+      },
+      "engagement": {
+        "title": "Opdrachtoverzicht",
+        "desc": "Managementsamenvatting voor interne stakeholders met vervolgstappen."
+      },
+      "notes": {
+        "title": "Gespreksnotities",
+        "desc": "Uitgebreide notities met actiepunten, beslissingen en verantwoordelijken."
+      }
+    },
+    "howItWorks": {
+      "tag": "Hoe het werkt",
+      "headline1": "Drie stappen. ",
+      "headline2": "Geen ",
+      "headlineEm": "notities.",
+      "record": {
+        "number": "1",
+        "title": "Opnemen of uploaden",
+        "desc": "Neem je klantgesprek op of upload een bestaande opname."
+      },
+      "process": {
+        "number": "2",
+        "title": "AI structureert alles",
+        "desc": "Neural Summary transcribeert, herkent sprekers en haalt de belangrijkste informatie eruit."
+      },
+      "deliver": {
+        "number": "3",
+        "title": "Ontvang je deliverables",
+        "desc": "Download follow-up e-mails, briefs en samenvattingen. Klaar om te versturen."
+      }
+    },
+    "testimonial": {
+      "stars": "★★★★★",
+      "quote1": "Ik besteedde altijd 30 minuten na elk klantgesprek aan het uitwerken van notities. Nu doet Neural Summary het ",
+      "quoteStrong": "voordat ik m'n laptop heb dichtgeklapt.",
+      "quote2": " Het heeft mijn workflow compleet veranderd.",
+      "name": "Wouter Chompff",
+      "role": "Oprichter · One Man Agency"
+    },
+    "cta": {
+      "tag": "Klaar om sneller te leveren?",
+      "headline1": "Begin te creëren ",
+      "headline2": "met je ",
+      "headlineEm": "stem.",
+      "ctaPrimary": "Start gratis",
+      "meta": {
+        "trial": "14 dagen gratis proberen",
+        "noCard": "Geen creditcard nodig",
+        "cancel": "Altijd opzegbaar"
+      }
+    }
+  },
+  "forProductLeaders": {
+    "meta": {
+      "title": "Neural Summary voor productleiders — Sneller shippen. Niets verliezen.",
+      "description": "Zet elke productmeeting om in een spec, feature brief, gebruikersinzichten en sprint notes. Automatisch."
+    },
+    "hero": {
+      "eyebrow": "Voor productleiders",
+      "headline1": "De beste PM's schrijven geen ",
+      "headlineEm": "specs vanaf nul.",
+      "body": "Ze laten Neural Summary elke productmeeting omzetten in werkklare documenten. ",
+      "bodyStrong": "Automatisch.",
+      "cta": "Probeer gratis",
+      "ctaSecondary": "Bekijk het in actie",
+      "socialProof": "Vertrouwd door productleiders en engineeringteams"
+    },
+    "outputPreview": {
+      "tag": "Wat je krijgt",
+      "badge": "Gegenereerd in 3 minuten",
+      "label": "Productspec",
+      "feature": "Feature:",
+      "featureValue": "In-app notificaties",
+      "owner": "Eigenaar:",
+      "ownerValue": "Sofiya H.",
+      "status": "Status:",
+      "statusValue": "Concept",
+      "goalsTitle": "Doelen",
+      "goals": [
+        "E-mailafhankelijkheid met 40% verminderen",
+        "Tijdgevoelige updates in-app tonen",
+        "Ondersteuning voor @mention-notificaties"
+      ],
+      "reqTitle": "Vereisten",
+      "reqPriority": "Prioriteit",
+      "requirements": [
+        { "name": "Realtime push-delivery via WebSocket", "priority": "P0" },
+        { "name": "Gelezen/ongelezen status gesynchroniseerd", "priority": "P0" },
+        { "name": "Notificatievoorkeuren per kanaal", "priority": "P1" },
+        { "name": "Dagelijkse digest met gebundeld overzicht", "priority": "P2" }
+      ]
+    },
+    "painGap": {
+      "tag": "De realiteit",
+      "headline1": "Elke meeting die je niet opneemt ",
+      "headline2": "is context die je team ",
+      "headlineEm": "nooit meer terugkrijgt.",
+      "body": "Beslissingen, feedback, vereisten, actiepunten — weg zodra je ophangt.",
+      "decisions": {
+        "title": "Beslissingen",
+        "desc": "Waarom kozen we deze richting? Niemand weet het meer."
+      },
+      "feedback": {
+        "title": "Gebruikersfeedback",
+        "desc": "De exacte woorden van de klant. Verloren."
+      },
+      "requirements": {
+        "title": "Vereisten",
+        "desc": "Edge cases besproken maar nooit gedocumenteerd."
+      },
+      "actions": {
+        "title": "Actiepunten",
+        "desc": "Wie is eigenaar? Wordt betwist in de volgende standup."
+      }
+    },
+    "deliverables": {
+      "tag": "Je output, geautomatiseerd",
+      "headline1": "Eén productmeeting. ",
+      "headline2": "Vier ",
+      "headlineEm": "werkklare",
+      "headline3": " outputs.",
+      "body": "Elk productgesprek bevat een spec, een brief, inzichten en sprint notes. Neural Summary haalt ze er allemaal uit.",
+      "spec": {
+        "title": "Productspec",
+        "desc": "Gestructureerde spec met doelen, vereisten en succescriteria."
+      },
+      "brief": {
+        "title": "Feature brief",
+        "desc": "Beknopt feature-overzicht klaar voor engineering handoff."
+      },
+      "insights": {
+        "title": "Gebruikersinzichten",
+        "desc": "Gebruikerscitaten, pijnpunten en feature requests."
+      },
+      "sprint": {
+        "title": "Sprint notes",
+        "desc": "Actiepunten, eigenaren en beslissingen voor het sprint board."
+      }
+    },
+    "howItWorks": {
+      "tag": "Hoe het werkt",
+      "headline1": "Drie stappen. ",
+      "headline2": "Geen ",
+      "headlineEm": "notities.",
+      "record": {
+        "number": "1",
+        "title": "Opnemen of uploaden",
+        "desc": "Neem je productmeeting op of upload een bestaande opname."
+      },
+      "process": {
+        "number": "2",
+        "title": "AI structureert alles",
+        "desc": "Neural Summary transcribeert, herkent sprekers en haalt de belangrijkste inzichten eruit."
+      },
+      "deliver": {
+        "number": "3",
+        "title": "Ontvang je output",
+        "desc": "Download specs, briefs en inzichten. Klaar voor je team."
+      }
+    },
+    "testimonial": {
+      "stars": "★★★★★",
+      "quote1": "Ik gebruik Neural Summary voor al mijn productmeetings. ",
+      "quoteStrong": "Ik vergeet nooit meer iets.",
+      "quote2": " Elke beslissing, elk gebruikersinzicht, elk actiepunt wordt automatisch vastgelegd.",
+      "name": "Sofiya Hodovanska",
+      "role": "Head of Product · Uneti"
+    },
+    "cta": {
+      "tag": "Klaar om sneller te shippen?",
+      "headline1": "Begin te creëren ",
+      "headline2": "met je ",
+      "headlineEm": "stem.",
+      "ctaPrimary": "Start gratis",
+      "meta": {
+        "trial": "14 dagen gratis proberen",
+        "noCard": "Geen creditcard nodig",
+        "cancel": "Altijd opzegbaar"
+      }
+    }
   }
 }

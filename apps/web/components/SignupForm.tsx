@@ -106,6 +106,9 @@ export default function SignupForm() {
         method: 'email',
         email: email
       });
+      if (typeof window !== 'undefined' && typeof window.fbq === 'function') {
+        window.fbq('track', 'CompleteRegistration', { method: 'email' });
+      }
 
       // Send verification code via backend
       if (auth.currentUser) {
@@ -239,6 +242,9 @@ export default function SignupForm() {
       trackEvent('signup_completed', {
         method: 'google'
       });
+      if (typeof window !== 'undefined' && typeof window.fbq === 'function') {
+        window.fbq('track', 'CompleteRegistration', { method: 'google' });
+      }
 
       // Check for pending import and auto-import
       const pendingImport = getPendingImport();
