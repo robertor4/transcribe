@@ -3121,5 +3121,247 @@
       "body": "Start turning your conversations into work-ready documents today.",
       "button": "Get started"
     }
+  },
+  "forConsultants": {
+    "meta": {
+      "title": "Neural Summary for Consultants — Deliver Faster. Win More.",
+      "description": "Turn every client call into a follow-up email, proposal brief, and engagement summary. Automatically."
+    },
+    "hero": {
+      "eyebrow": "For consultants",
+      "headline1": "Top consultants don't write ",
+      "headlineEm": "meeting notes.",
+      "body": "They let Neural Summary turn every client call into ready-to-send deliverables. ",
+      "bodyStrong": "In minutes, not hours.",
+      "cta": "Try it free"
+    },
+    "outputPreview": {
+      "tag": "What you'll get",
+      "badge": "Generated in 2 minutes",
+      "label": "Client Follow-up",
+      "to": "To:",
+      "toValue": "sarah.chen@meridian.com",
+      "subject": "Subject:",
+      "subjectValue": "Next steps — Q3 roadmap alignment",
+      "greeting": "Hi Sarah,",
+      "body": "Great speaking with you today. Here are the key points we aligned on:",
+      "bullets": [
+        "Budget approved for Phase 1 (€45K)",
+        "Timeline: kick-off by March 28",
+        "You'll send the brand guidelines by Friday"
+      ],
+      "closing": "I'll have the proposal brief ready by Monday."
+    },
+    "painGap": {
+      "tag": "The reality",
+      "headline1": "Your competitor's follow-up ",
+      "headline2": "arrived ",
+      "headlineEm": "2 hours ago.",
+      "body": "They didn't type faster. They used a system.",
+      "them": {
+        "label": "Your competitor",
+        "step1": "Client call ends",
+        "step2": "Records with Neural Summary",
+        "step3": "Follow-up email lands in 15 min"
+      },
+      "you": {
+        "label": "You",
+        "step1": "Client call ends",
+        "step2": "Opens notes app, starts typing",
+        "step3": "Still writing 2 hours later"
+      }
+    },
+    "deliverables": {
+      "tag": "Your deliverables, automated",
+      "headline1": "One client call. ",
+      "headline2": "Four ",
+      "headlineEm": "ready-to-send",
+      "headline3": " deliverables.",
+      "body": "Every client conversation contains a follow-up, a brief, a summary, and notes. Neural Summary extracts them all.",
+      "followUp": {
+        "title": "Follow-up Email",
+        "desc": "Professional client follow-up quoting their exact words. Ready to send."
+      },
+      "proposal": {
+        "title": "Proposal Brief",
+        "desc": "Structured brief with scope, timeline, and key decisions from the call."
+      },
+      "engagement": {
+        "title": "Engagement Summary",
+        "desc": "Executive overview for internal stakeholders with next steps."
+      },
+      "notes": {
+        "title": "Client Meeting Notes",
+        "desc": "Detailed notes with action items, decisions, and owner assignments."
+      }
+    },
+    "howItWorks": {
+      "tag": "How it works",
+      "headline1": "Three steps. ",
+      "headline2": "Zero ",
+      "headlineEm": "note-taking.",
+      "record": {
+        "number": "1",
+        "title": "Record or upload",
+        "desc": "Record your client call or upload an existing recording."
+      },
+      "process": {
+        "number": "2",
+        "title": "AI structures everything",
+        "desc": "Neural Summary transcribes, identifies speakers, and extracts key information."
+      },
+      "deliver": {
+        "number": "3",
+        "title": "Get your deliverables",
+        "desc": "Download follow-up emails, briefs, and summaries. Ready to send."
+      }
+    },
+    "testimonial": {
+      "stars": "★★★★★",
+      "quote1": "I used to spend 30 minutes after every client call writing up notes. Now Neural Summary does it ",
+      "quoteStrong": "before I've even closed my laptop.",
+      "quote2": " It completely changed my workflow.",
+      "name": "Wouter Chompff",
+      "role": "Founder · One Man Agency"
+    },
+    "cta": {
+      "tag": "Ready to deliver faster?",
+      "headline1": "Start creating ",
+      "headline2": "with your ",
+      "headlineEm": "voice.",
+      "ctaPrimary": "Start for free",
+      "meta": {
+        "trial": "Free 14-day trial",
+        "noCard": "No credit card needed",
+        "cancel": "Cancel anytime"
+      }
+    }
+  },
+  "forProductLeaders": {
+    "meta": {
+      "title": "Neural Summary for Product Leaders — Ship Faster. Lose Nothing.",
+      "description": "Turn every product meeting into a spec, feature brief, user insights report, and sprint notes. Automatically."
+    },
+    "hero": {
+      "eyebrow": "For product leaders",
+      "headline1": "The best PMs don't write ",
+      "headlineEm": "specs from scratch.",
+      "body": "They let Neural Summary turn every product meeting into work-ready documents. ",
+      "bodyStrong": "Automatically.",
+      "cta": "Try it free"
+    },
+    "outputPreview": {
+      "tag": "What you'll get",
+      "badge": "Generated in 3 minutes",
+      "label": "Product Spec",
+      "feature": "Feature:",
+      "featureValue": "In-app notifications",
+      "owner": "Owner:",
+      "ownerValue": "Sofiya H.",
+      "status": "Status:",
+      "statusValue": "Draft",
+      "goalsTitle": "Goals",
+      "goals": [
+        "Reduce email dependency by 40%",
+        "Surface time-sensitive updates in-app",
+        "Support @mention notifications"
+      ],
+      "reqTitle": "Requirements",
+      "reqPriority": "Priority",
+      "requirements": [
+        { "name": "Real-time push delivery via WebSocket", "priority": "P0" },
+        { "name": "Read/unread state synced across devices", "priority": "P0" },
+        { "name": "Per-channel notification preferences", "priority": "P1" },
+        { "name": "Daily digest mode with batched summary", "priority": "P2" }
+      ]
+    },
+    "painGap": {
+      "tag": "The reality",
+      "headline1": "Every meeting you don't record ",
+      "headline2": "is context your team will ",
+      "headlineEm": "never recover.",
+      "body": "Decisions, feedback, requirements, action items — gone the moment you hang up.",
+      "decisions": {
+        "title": "Decisions",
+        "desc": "Why did we choose this direction? Nobody remembers."
+      },
+      "feedback": {
+        "title": "User feedback",
+        "desc": "The exact words the customer used. Lost."
+      },
+      "requirements": {
+        "title": "Requirements",
+        "desc": "Edge cases discussed but never documented."
+      },
+      "actions": {
+        "title": "Action items",
+        "desc": "Who owns what? Disputed in the next standup."
+      }
+    },
+    "deliverables": {
+      "tag": "Your outputs, automated",
+      "headline1": "One product meeting. ",
+      "headline2": "Four ",
+      "headlineEm": "work-ready",
+      "headline3": " outputs.",
+      "body": "Every product conversation contains a spec, a brief, insights, and sprint notes. Neural Summary extracts them all.",
+      "spec": {
+        "title": "Product Spec",
+        "desc": "Structured spec with goals, requirements, and success criteria."
+      },
+      "brief": {
+        "title": "Feature Brief",
+        "desc": "Concise feature overview ready for engineering handoff."
+      },
+      "insights": {
+        "title": "User Insights Report",
+        "desc": "Extracted user quotes, pain points, and feature requests."
+      },
+      "sprint": {
+        "title": "Sprint Notes",
+        "desc": "Action items, owners, and decisions for the sprint board."
+      }
+    },
+    "howItWorks": {
+      "tag": "How it works",
+      "headline1": "Three steps. ",
+      "headline2": "Zero ",
+      "headlineEm": "note-taking.",
+      "record": {
+        "number": "1",
+        "title": "Record or upload",
+        "desc": "Record your product meeting or upload an existing recording."
+      },
+      "process": {
+        "number": "2",
+        "title": "AI structures everything",
+        "desc": "Neural Summary transcribes, identifies speakers, and extracts key insights."
+      },
+      "deliver": {
+        "number": "3",
+        "title": "Get your outputs",
+        "desc": "Download specs, briefs, and insights. Ready for your team."
+      }
+    },
+    "testimonial": {
+      "stars": "★★★★★",
+      "quote1": "I use Neural Summary for all my product meetings. ",
+      "quoteStrong": "I never forget anything anymore.",
+      "quote2": " Every decision, every user insight, every action item is captured automatically.",
+      "name": "Sofiya Hodovanska",
+      "role": "Head of Product · Uneti"
+    },
+    "cta": {
+      "tag": "Ready to ship faster?",
+      "headline1": "Start creating ",
+      "headline2": "with your ",
+      "headlineEm": "voice.",
+      "ctaPrimary": "Start for free",
+      "meta": {
+        "trial": "Free 14-day trial",
+        "noCard": "No credit card needed",
+        "cancel": "Cancel anytime"
+      }
+    }
   }
 }

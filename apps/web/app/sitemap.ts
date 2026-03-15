@@ -55,6 +55,16 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: 'monthly' as const,
       priority: 0.7,
     },
+    {
+      path: '/for-consultants',
+      changeFrequency: 'weekly' as const,
+      priority: 0.7,
+    },
+    {
+      path: '/for-product-leaders',
+      changeFrequency: 'weekly' as const,
+      priority: 0.7,
+    },
   ];
 
   // Generate sitemap entries for all locales
